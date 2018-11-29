@@ -22,7 +22,7 @@ class Archivos extends REST_Controller{
 	
 	public function generaZip_GET(){
 		/* Nombre del Archivo Generado */
-		$archivoZip = 'CodeGen.zip';
+		$archivoZip = $_GET['nombre'];
 		
 		/* Para guardar los archivos que se agregan (version 2, agergar y eliminar archivos mediante esta variable) */
 		$archivos = array();
@@ -46,7 +46,7 @@ class Archivos extends REST_Controller{
 		$zip_new -> addEmptyDir($dirM);
 		$modelos = dir('gens/application/models');
 		while(($file = $modelos -> read()) !== FALSE){
-			if($file != "." && $file != ".."){
+			if($file != "." && $file != ".." && $file != ".gitkeep"){
 				$zip_new -> addFile("gens/application/models/" . $file, "application/models/" . $file);
 				array_push($archivos, "gens/application/models/" . $file);
 			}
@@ -54,7 +54,7 @@ class Archivos extends REST_Controller{
 		$modelos -> close();
 		$controladores = dir('gens/application/controllers');
 		while(($file = $controladores -> read()) !== FALSE){
-			if($file != "." && $file != ".."){
+			if($file != "." && $file != ".." && $file != ".gitkeep"){
 				$zip_new -> addFile("gens/application/controllers/" . $file, "application/controllers/" . $file);
 				array_push($archivos, "gens/application/controllers/" . $file);
 			}
@@ -62,10 +62,9 @@ class Archivos extends REST_Controller{
 		$controladores -> close();
 		$zip_new -> close();
 		
-		
 		$modelos = dir('gens/application/models');
 		while(($file = $modelos -> read()) !== FALSE){
-			if($file != "." && $file != ".."){
+			if($file != "." && $file != ".." && $file != ".gitkeep"){
 				unlink("gens/application/models/" . $file);
 			}
 		}
@@ -73,7 +72,7 @@ class Archivos extends REST_Controller{
 		
 		$controladores = dir('gens/application/controllers');
 		while(($file = $controladores -> read()) !== FALSE){
-			if($file != "." && $file != ".."){
+			if($file != "." && $file != ".." && $file != ".gitkeep"){
 				unlink("gens/application/controllers/" . $file);
 			}
 		}
@@ -247,7 +246,7 @@ class Archivos extends REST_Controller{
 			}
 		}
 		$cuantosIntegers = count($enteros);
-		$txt = fopen($dirModel . $archivo, 'w');
+		$txt             = fopen($dirModel . $archivo, 'w');
 		fwrite($txt, " <?php");
 		fwrite($txt, "\n" . "defined('BASEPATH') or exit('No direct script access allowed');");
 		fwrite($txt, "\n" . "class $tabla" . "_model extends CI_Model{");

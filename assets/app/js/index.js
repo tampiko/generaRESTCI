@@ -10,16 +10,22 @@ $("#tabla").change(function(){
 	getInfoTabla();
 });
 
-$("#btnGeneraModel").click(function(event){
+$("#btnGeneraModel").click(function(){
 	generaModel();
 });
 
-$("#btnGeneraController").click(function(event){
+$("#btnGeneraController").click(function(){
 	generaController();
 });
 
-$("#btnDescargar").click(function(event){
+$("#btnDescargar").click(function(){
 	descargar();
+});
+
+$("#btnGeneraDoble").click(function(){
+	/* Crear pero con promesas */
+	generaController();
+	generaModel();
 });
 
 $('#modalError').on('shown.bs.modal', function(e){
@@ -37,7 +43,9 @@ function descargar(){
 		url: urlServer + elIndex + 'Archivos/generaZip',
 		type: 'GET',
 		dataType: 'json',
-		data: {}
+		data: {
+			nombre: $("#bdatos").val()
+		}
 	}).done(function(res){
 		
 		$("#divMensajes").append(`<a target="_blank" href="${res.url}${urlServer}gens/${res.zip}">Descargar</a><br>`);
