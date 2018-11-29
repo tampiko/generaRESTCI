@@ -1,5 +1,5 @@
 var elIndex = 'index.php/';
-var urlServer = '/gencode/';
+var urlServer = '/generarestci/';
 
 function cargaScript(url, callback){
 	var d = new Date();
