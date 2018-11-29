@@ -1,6 +1,10 @@
 <?php
+
+use Restserver\Libraries\REST_Controller;
+
 defined('BASEPATH') or exit('No direct script access allowed');
-require(APPPATH . '/libraries/REST_Controller.php');
+require APPPATH . 'libraries/REST_Controller.php';
+require APPPATH . 'libraries/Format.php';
 
 class Archivos extends REST_Controller{
 	
@@ -87,15 +91,16 @@ class Archivos extends REST_Controller{
 	}
 	
 	public function generaController_POST(){
-		$tabla     = $this -> post('tabla');
-		$json_data = json_decode($this -> post('info'), TRUE);
-		$archivo   = $tabla . ".php";
-		$campos    = '';
-		$pk        = '';
-		$int       = array();
+		$dirController = './gens/application/controllers/';
+		$tabla         = $this -> post('tabla');
+		$json_data     = json_decode($this -> post('info'), TRUE);
+		$archivo       = $tabla . ".php";
+		$campos        = '';
+		$pk            = '';
+		$enteros       = array();
 		foreach($json_data as $x => $x_value){
 			if($x_value['data_type'] == 'int'){
-				array_push($int, $x_value['column_name']);
+				array_push($enteros, $x_value['column_name']);
 			}
 			if($x_value['column_key'] == 'PRI'){
 				$pk = $x_value['column_name'];
@@ -106,114 +111,108 @@ class Archivos extends REST_Controller{
 				$campos .= $x_value['column_name'];
 			}
 		}
-		$cuantosIntegers = count($int);
-		$modelo          = $tabla . "_model";
-		$model           = "M" . $tabla;
+		//		$cuantosIntegers = count($enteros);
+		$modelo = $tabla . "_model";
+		$model  = "M" . $tabla;
 		
-		$txt  = fopen('./gens/application/controllers/' . $archivo, 'w');
-		$code = '';
-		$code .= "<?php";
-		$code .= "\n" . "defined('BASEPATH') or exit('No direct script access allowed');";
-		$code .= "\n" . "require(APPPATH.'/libraries/REST_Controller.php');";
-		$code .= "\n" . "class $tabla extends REST_Controller{";
-		$code .= "\n";
-		$code .= "\n\t" . "public function __construct(){";
-		$code .= "\n\t\t" . "parent::__construct();";
-		$code .= "\n\t\t" . "\$this -> load -> model('$modelo', '$model');";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\t" . "public function index_GET(){";
-		$code .= "\n\t\t" . "\$res = array(";
-		$code .= "\n\t\t\t" . "'Creado'     => 'CI - GeneraCode',";
-		$code .= "\n\t\t\t" . "'Tipo'       => 'GET',";
-		$code .= "\n\t\t\t" . "'Controller' => '$tabla'";
-		$code .= "\n\t\t" . ");";
-		$code .= "\n\t\t" . "\$this -> response(\$res);";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\t" . "public function index_POST(){";
-		$code .= "\n\t\t" . "\$res = array(";
-		$code .= "\n\t\t\t" . "'Creado'     => 'CI - GeneraCode',";
-		$code .= "\n\t\t\t" . "'Tipo'       => 'POST',";
-		$code .= "\n\t\t\t" . "'Controller' => '$tabla'";
-		$code .= "\n\t\t" . ");";
-		$code .= "\n\t\t" . "\$this -> response(\$res);";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\t" . "function getAll$tabla" . "_GET(){";
-		$code .= "\n\t\t" . "\$info = \$this -> get();";
-		$code .= "\n\t\t" . "unset(\$info['apiKey']);";
-		$code .= "\n\t\t" . "\$$tabla = \$this -> $model -> getAll$tabla();";
-		$code .= "\n\t\t" . "\$respuesta = array(";
-		$code .= "\n\t\t\t" . "'error' => false,";
-		$code .= "\n\t\t\t" . "'mensaje' => '$tabla loaded',";
-		$code .= "\n\t\t\t" . "'data' => \$$tabla";
-		$code .= "\n\t\t" . ");";
-		$code .= "\n\t\t" . "\$this -> response(\$respuesta);";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\t" . "function get$tabla" . "_GET(){";
-		$code .= "\n\t\t" . "\$info = \$this -> get();";
-		$code .= "\n\t\t" . "unset(\$info['apiKey']);";
-		$code .= "\n\t\t" . "\$where = array('$pk'=>info['$pk']);";
-		$code .= "\n\t\t" . "\$$tabla = \$this -> $model -> get$tabla(\$where);";
-		$code .= "\n\t\t" . "\$respuesta = array(";
-		$code .= "\n\t\t\t" . "'error' => false,";
-		$code .= "\n\t\t\t" . "'mensaje' => '$tabla loaded',";
-		$code .= "\n\t\t\t" . "'data' => \$$tabla";
-		$code .= "\n\t\t" . ");";
-		$code .= "\n\t\t" . "\$this -> response(\$respuesta);";
-		$code .= "\n\t" . "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\tfunction add$tabla" . "_POST(){";
-		$code .= "\n\t\t" . "\$info = \$this -> post();";
-		$code .= "\n\t\t" . "unset(\$info['apiKey']);";
-		$code .= "\n\t\t" . "\$this -> $model -> add$tabla(\$info);";
-		$code .= "\n\t\t" . "\$respuesta = array(";
-		$code .= "\n\t\t\t" . "'error' => false,";
-		$code .= "\n\t\t\t" . "'mensaje' => '$tabla added.'";
-		$code .= "\n\t\t" . ");";
-		$code .= "\n\t\t" . "\$this -> response(\$respuesta);";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\t" . "function upd$tabla" . "_POST(){";
-		$code .= "\n\t\t" . "\$info = \$this -> post();";
-		$code .= "\n\t\t" . "\$$pk = \$info['$pk'];";
-		$code .= "\n\t\t" . "unset(\$info['apiKey']);";
-		$code .= "\n\t\t" . "unset(\$info['$pk']);";
-		$code .= "\n\t\t" . "\$this -> $model -> upd$tabla(\$$pk, \$info);";
-		$code .= "\n\t\t" . "\$respuesta = array(";
-		$code .= "\n\t\t\t" . "'error'   => false,";
-		$code .= "\n\t\t\t" . "'mensaje' => '$tabla updated.'";
-		$code .= "\n\t\t" . ");";
-		$code .= "\n\t\t" . "\$this -> response(\$respuesta);";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\t" . "function del$tabla" . "_POST(){";
-		$code .= "\n\t\t" . "\$info = \$this -> post();";
-		$code .= "\n\t\t" . "\$$pk = \$info['$pk'];";
-		$code .= "\n\t\t" . "unset(\$info['apiKey']);";
-		$code .= "\n\t\t" . "unset(\$info['$pk']);";
-		$code .= "\n\t\t" . "\$this -> $model -> del$tabla(\$$pk, \$info);";
-		$code .= "\n\t\t" . "\$respuesta = array(";
-		$code .= "\n\t\t\t" . "'error' => false,";
-		$code .= "\n\t\t\t" . "'mensaje' => '$tabla deleted.'";
-		$code .= "\n\t\t" . ");";
-		$code .= "\n\t\t" . "\$this -> response(\$respuesta);";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n";
-		$code .= "}";
-		
-		fwrite($txt, $code);
+		$txt = fopen($dirController . $archivo, 'c', 1);
+		fwrite($txt, '<?php');
+		fwrite($txt, "\n");
+		fwrite($txt, "\n" . "use Restserver\Libraries\REST_Controller;");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n" . "defined('BASEPATH') or exit('No direct script access allowed');");
+		fwrite($txt, "\n" . "require APPPATH . 'libraries/REST_Controller.php';");
+		fwrite($txt, "\n" . "require APPPATH . 'libraries/Format.php';");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n" . "class $tabla extends REST_Controller{");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "public function __construct(){");
+		fwrite($txt, "\n\t\t" . "parent ::__construct();");
+		fwrite($txt, "\n\t\t" . "\$this -> load -> model('$modelo', '$model');");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "public function index_GET(){");
+		fwrite($txt, "\n\t\t" . "\$res = array(");
+		fwrite($txt, "\n\t\t\t" . "'Creado'     => 'CI - GeneraCode',");
+		fwrite($txt, "\n\t\t\t" . "'Tipo'       => 'GET',");
+		fwrite($txt, "\n\t\t\t" . "'Controller' => '$tabla'");
+		fwrite($txt, "\n\t\t" . ");");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$res);");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "public function index_POST(){");
+		fwrite($txt, "\n\t\t" . "\$res = array(");
+		fwrite($txt, "\n\t\t\t" . "'Creado'     => 'CI - GeneraCode',");
+		fwrite($txt, "\n\t\t\t" . "'Tipo'       => 'POST',");
+		fwrite($txt, "\n\t\t\t" . "'Controller' => '$tabla'");
+		fwrite($txt, "\n\t\t" . ");");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$res);");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "function getAll$tabla" . "_GET(){");
+		fwrite($txt, "\n\t\t" . "\$info = \$this -> get();");
+		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
+		fwrite($txt, "\n\t\t" . "\$$tabla = \$this -> $model -> getAll$tabla();");
+		fwrite($txt, "\n\t\t" . "\$respuesta = array(");
+		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
+		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla loaded',");
+		fwrite($txt, "\n\t\t\t" . "'data' => \$$tabla");
+		fwrite($txt, "\n\t\t" . ");");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$respuesta);");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "function get$tabla" . "_GET(){");
+		fwrite($txt, "\n\t\t" . "\$info = \$this -> get();");
+		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
+		fwrite($txt, "\n\t\t" . "\$where = array('$pk' => info['$pk']);");
+		fwrite($txt, "\n\t\t" . "\$$tabla = \$this -> $model -> get$tabla(\$where);");
+		fwrite($txt, "\n\t\t" . "\$respuesta = array(");
+		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
+		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla loaded',");
+		fwrite($txt, "\n\t\t\t" . "'data' => \$$tabla");
+		fwrite($txt, "\n\t\t" . ");");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$respuesta);");
+		fwrite($txt, "\n\t" . "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\tfunction add$tabla" . "_POST(){");
+		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
+		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
+		fwrite($txt, "\n\t\t" . "\$this -> $model -> add$tabla(\$info);");
+		fwrite($txt, "\n\t\t" . "\$respuesta = array(");
+		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
+		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla added.'");
+		fwrite($txt, "\n\t\t" . ");");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$respuesta);");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "function upd$tabla" . "_POST(){");
+		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
+		fwrite($txt, "\n\t\t" . "\$$pk = \$info['$pk'];");
+		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
+		fwrite($txt, "\n\t\t" . "unset(\$info['$pk']);");
+		fwrite($txt, "\n\t\t" . "\$this -> $model -> upd$tabla(\$$pk, \$info);");
+		fwrite($txt, "\n\t\t" . "\$respuesta = array(");
+		fwrite($txt, "\n\t\t\t" . "'error'   => FALSE,");
+		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla updated.'");
+		fwrite($txt, "\n\t\t" . ");");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$respuesta);");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "function del$tabla" . "_POST(){");
+		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
+		fwrite($txt, "\n\t\t" . "\$$pk = \$info['$pk'];");
+		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
+		fwrite($txt, "\n\t\t" . "unset(\$info['$pk']);");
+		fwrite($txt, "\n\t\t" . "\$this -> $model -> del$tabla(\$$pk, \$info);");
+		fwrite($txt, "\n\t\t" . "\$respuesta = array(");
+		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
+		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla deleted.'");
+		fwrite($txt, "\n\t\t" . ");");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$respuesta);");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n");
+		fwrite($txt, "}");
 		fclose($txt);
 		
 		$respuesta = array(
@@ -224,19 +223,19 @@ class Archivos extends REST_Controller{
 			'Info'       => $json_data
 		);
 		$this -> response($respuesta);
-		
 	}
 	
 	public function generaModel_POST(){
+		$dirModel  = './gens/application/models/';
 		$tabla     = $this -> post('tabla');
 		$json_data = json_decode($this -> post('info'), TRUE);
-		$archivo   = $tabla . "_model.php";
+		$archivo   = $tabla . "_model . php";
 		$campos    = '';
 		$pk        = '';
-		$int       = array();
+		$enteros   = array();
 		foreach($json_data as $x => $x_value){
 			if($x_value['data_type'] == 'int'){
-				array_push($int, $x_value['column_name']);
+				array_push($enteros, $x_value['column_name']);
 			}
 			if($x_value['column_key'] == 'PRI'){
 				$pk = $x_value['column_name'];
@@ -247,86 +246,70 @@ class Archivos extends REST_Controller{
 				$campos .= $x_value['column_name'];
 			}
 		}
-		$cuantosIntegers = count($int);
-		
-		$txt  = fopen('./gens/application/models/' . $archivo, 'w');
-		$code = '';
-		$code .= "<?php";
-		$code .= "\n" . "defined('BASEPATH') or exit('No direct script access allowed');";
-		$code .= "\n" . "class $tabla" . "_model extends CI_Model{";
-		$code .= "\n";
-		$code .= "\n";
-		
+		$cuantosIntegers = count($enteros);
+		$txt = fopen($dirModel . $archivo, 'w');
+		fwrite($txt, " <?php");
+		fwrite($txt, "\n" . "defined('BASEPATH') or exit('No direct script access allowed');");
+		fwrite($txt, "\n" . "class $tabla" . "_model extends CI_Model{");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n");
 		foreach($json_data as $x => $x_value){
-			$code .= "\t" . 'public $' . $x_value['column_name'] . ";";
-			$code .= "\n";
+			fwrite($txt, "\t" . 'public $' . $x_value['column_name'] . ";");
+			fwrite($txt, "\n");
 		}
-		
-		$code .= "\n\t" . "public function __construct(){";
-		$code .= "\n\t\t" . "parent::__construct();";
-		$code .= "\n\t\t" . "\$this -> load -> database();";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		$code .= "\n\t" . "function getAll$tabla(){";
-		$code .= "\n\t\t" . "\$this -> db -> select('$campos');";
-		$code .= "\n\t\t" . "\$this -> db -> order_by('$pk','asc');";
-		$code .= "\n\t\t" . "\$query = \$this -> db -> get('" . strtolower($tabla) . "');";
-		$code .= "\n\t\t" . "\$rows = \$query -> custom_result_object('$tabla" . "_model');";
-		
+		fwrite($txt, "\n\t" . "public function __construct(){");
+		fwrite($txt, "\n\t\t" . "parent ::__construct();");
+		fwrite($txt, "\n\t\t" . "\$this -> load -> database();");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "function getAll$tabla(){");
+		fwrite($txt, "\n\t\t" . "\$this -> db -> select('$campos');");
+		fwrite($txt, "\n\t\t" . "\$this -> db -> order_by('$pk', 'asc');");
+		fwrite($txt, "\n\t\t" . "\$query = \$this -> db -> get('" . strtolower($tabla) . "');");
+		fwrite($txt, "\n\t\t" . "\$rows = \$query -> custom_result_object('$tabla" . "_model');");
 		if($cuantosIntegers > 0){
-			$code .= "\n\t\t" . "foreach (\$rows as \$row) {";
+			fwrite($txt, "\n\t\t" . "foreach(\$rows as \$row) {");
 			for($x = 0; $x < $cuantosIntegers; $x++){
-				$code .= "\n\t\t\t" . "\$row -> $int[$x] = intval(\$row -> $int[$x]);";
+				fwrite($txt, "\n\t\t\t" . "\$row -> $enteros[$x] = intval(\$row -> $enteros[$x]);");
 			}
-			$code .= "\n\t\t" . "}";
+			fwrite($txt, "\n\t\t" . "}");
 		}
-		
-		$code .= "\n\t\t" . "return \$rows;";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\t" . "function get$tabla(" . '$where' . "){";
-		$code .= "\n\t\t" . "\$this -> db -> select('$campos');";
-		$code .= "\n\t\t" . "\$this -> db -> where(\$where);";
-		$code .= "\n\t\t" . "\$this -> db -> order_by('$pk','asc');";
-		$code .= "\n\t\t" . "\$query = \$this -> db -> get('" . strtolower($tabla) . "');";
-		$code .= "\n\t\t" . "\$rows = \$query -> custom_result_object('$tabla" . "_model');";
-		
+		fwrite($txt, "\n\t\t" . "return \$rows;");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "function get$tabla(" . '$where' . "){");
+		fwrite($txt, "\n\t\t" . "\$this -> db -> select('$campos');");
+		fwrite($txt, "\n\t\t" . "\$this -> db -> where(\$where);");
+		fwrite($txt, "\n\t\t" . "\$this -> db -> order_by('$pk', 'asc');");
+		fwrite($txt, "\n\t\t" . "\$query = \$this -> db -> get('" . strtolower($tabla) . "');");
+		fwrite($txt, "\n\t\t" . "\$rows = \$query -> custom_result_object('$tabla" . "_model');");
 		if($cuantosIntegers > 0){
-			$code .= "\n\t\t" . "foreach (\$rows as \$row) {";
+			fwrite($txt, "\n\t\t" . "foreach(\$rows as \$row) {");
 			for($x = 0; $x < $cuantosIntegers; $x++){
-				$code .= "\n\t\t\t" . "\$row -> $int[$x] = intval(\$row -> $int[$x]);";
+				fwrite($txt, "\n\t\t\t" . "\$row -> $enteros[$x] = intval(\$row -> $enteros[$x]);");
 			}
-			$code .= "\n\t\t" . "}";
+			fwrite($txt, "\n\t\t" . "}");
 		}
-		
-		$code .= "\n\t\t" . "return \$rows;";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\t" . "function add$tabla(" . '$datos' . "){";
-		$code .= "\n\t\t" . "\$this -> db -> insert('" . strtolower($tabla) . "', \$datos);";
-		$code .= "\n\t\t" . "return \$this -> db -> insert_id();";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\t" . "function upd$tabla(\$$pk,\$datos){";
-		$code .= "\n\t\t" . "\$this -> db -> where('$pk', \$$pk);";
-		$code .= "\n\t\t" . "return \$this -> db -> update('" . strtolower($tabla) . "', \$datos);";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\t" . "function del$tabla(\$$pk,\$datos){";
-		$code .= "\n\t\t" . "\$this -> db -> where('$pk', \$$pk);";
-		$code .= "\n\t\t" . "return \$this -> db -> update('" . strtolower($tabla) . "', \$datos);";
-		$code .= "\n\t" . "}";
-		$code .= "\n";
-		
-		$code .= "\n\r" . "}";
-		
-		fwrite($txt, $code);
+		fwrite($txt, "\n\t\t" . "return \$rows;");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "function add$tabla(" . '$datos' . "){");
+		fwrite($txt, "\n\t\t" . "\$this -> db -> insert('" . strtolower($tabla) . "', \$datos);");
+		fwrite($txt, "\n\t\t" . "return \$this -> db -> insert_id();");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "function upd$tabla(\$$pk,\$datos){");
+		fwrite($txt, "\n\t\t" . "\$this -> db -> where('$pk', \$$pk);");
+		fwrite($txt, "\n\t\t" . "return \$this -> db -> update('" . strtolower($tabla) . "', \$datos);");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\t" . "function del$tabla(\$$pk,\$datos){");
+		fwrite($txt, "\n\t\t" . "\$this -> db -> where('$pk', \$$pk);");
+		fwrite($txt, "\n\t\t" . "return \$this -> db -> update('" . strtolower($tabla) . "', \$datos);");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n\r" . "}");
 		fclose($txt);
-		
 		$respuesta = array(
 			'Sistema'    => 'CI - GeneraCode',
 			'Controller' => 'Archivos',
@@ -338,146 +321,142 @@ class Archivos extends REST_Controller{
 		$this -> response($respuesta);
 	}
 	
-	public function generaJs_POST(){
-		$tabla     = $this -> post('tabla');
-		$json_data = json_decode($this -> post('info'), TRUE);
-		$archivo   = $tabla . ".js";
-		$campos    = '';
-		$pk        = '';
-		$int       = array();
-		
-		foreach($json_data as $x => $x_value){
-			if($x_value['data_type'] == 'int'){
-				array_push($int, $x_value['column_name']);
-			}
-			if($x_value['column_key'] == 'PRI'){
-				$pk = $x_value['column_name'];
-			}
-			if(strlen($campos) != 0){
-				$campos .= ", " . $x_value['column_name'];
-			}else{
-				$campos .= $x_value['column_name'];
-			}
-		}
-		$cuantosIntegers = count($int);
-		
-		
-		$codigo = "";
-		$codigo .= "" . "var elIndex = 'index.php/';";
-		$codigo .= "\n" . "var urlServer = '/generacodesrv/';";
-		$codigo .= "\n";
-		$codigo .= "\n" . "function getAll${tabla}(){";
-		foreach($json_data as $x => $x_value){
-			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
-		}
-		$codigo .= "\n\t" . "$.ajax({";
-		$codigo .= "\n\t\t" . "url: urlServer + elIndex +'$tabla/getAll$tabla',";
-		$codigo .= "\n\t\t" . "type: 'GET',";
-		$codigo .= "\n\t\t" . "dataType: 'JSON',";
-		$codigo .= "\n\t\t" . "data: {";
-		foreach($json_data as $x => $x_value){
-			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
-		}
-		$codigo .= "\n\t\t\t" . "apkiKey: '11071981'";
-		$codigo .= "\n\t\t" . "}";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".done(function(res){";
-		$codigo .= "\n\t\t" . "console.log('success');";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".fail(function() {";
-		$codigo .= "\n\t\t" . "console.log('error');";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".always(function() {";
-		$codigo .= "\n\t\t" . "console.log('complete');";
-		$codigo .= "\n\t" . "});";
-		$codigo .= "\n" . "}";
-		$codigo .= "\n";
-		$codigo .= "\n" . "function add${tabla}(){";
-		foreach($json_data as $x => $x_value){
-			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
-		}
-		$codigo .= "\n\t" . "$.ajax({";
-		$codigo .= "\n\t\t" . "url: urlServer + elIndex +'${tabla}/add${tabla}',";
-		$codigo .= "\n\t\t" . "type: 'POST',";
-		$codigo .= "\n\t\t" . "dataType: 'JSON',";
-		$codigo .= "\n\t\t" . "data: {";
-		foreach($json_data as $x => $x_value){
-			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
-		}
-		$codigo .= "\n\t\t\t" . "apkiKey: '11071981'";
-		$codigo .= "\n\t\t" . "}";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".done(function(res){";
-		$codigo .= "\n\t\t" . "console.log('success');";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".fail(function() {";
-		$codigo .= "\n\t\t" . "console.log('error');";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".always(function() {";
-		$codigo .= "\n\t\t" . "console.log('complete');";
-		$codigo .= "\n\t" . "});";
-		$codigo .= "\n" . "}";
-		$codigo .= "\n";
-		$codigo .= "\n" . "function upd${tabla}(){";
-		foreach($json_data as $x => $x_value){
-			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
-		}
-		$codigo .= "\n\t" . "$.ajax({";
-		$codigo .= "\n\t\t" . "url: urlServer + elIndex +'${tabla}/upd${tabla}',";
-		$codigo .= "\n\t\t" . "type: 'POST',";
-		$codigo .= "\n\t\t" . "dataType: 'JSON',";
-		$codigo .= "\n\t\t" . "data: {";
-		foreach($json_data as $x => $x_value){
-			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
-		}
-		$codigo .= "\n\t\t\t" . "apkiKey: '11071981'";
-		$codigo .= "\n\t\t" . "}";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".done(function(res){";
-		$codigo .= "\n\t\t" . "console.log('success');";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".fail(function() {";
-		$codigo .= "\n\t\t" . "console.log('error');";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".always(function() {";
-		$codigo .= "\n\t\t" . "console.log('complete');";
-		$codigo .= "\n\t" . "});";
-		$codigo .= "\n" . "}";
-		$codigo .= "\n";
-		$codigo .= "\n" . "function del${tabla}(){";
-		foreach($json_data as $x => $x_value){
-			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
-		}
-		$codigo .= "\n\t" . "$.ajax({";
-		$codigo .= "\n\t\t" . "url: urlServer + elIndex +'${tabla}/del${tabla}',";
-		$codigo .= "\n\t\t" . "type: 'POST',";
-		$codigo .= "\n\t\t" . "dataType: 'JSON',";
-		$codigo .= "\n\t\t" . "data: {";
-		foreach($json_data as $x => $x_value){
-			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
-		}
-		$codigo .= "\n\t\t" . "apkiKey: '11071981'";
-		$codigo .= "\n\t\t" . "}";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".done(function(res){";
-		$codigo .= "\n\t\t" . "console.log('success');";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".fail(function() {";
-		$codigo .= "\n\t\t" . "console.log('error');";
-		$codigo .= "\n\t" . "})";
-		$codigo .= "\n\t" . ".always(function() {";
-		$codigo .= "\n\t\t" . "console.log('complete');";
-		$codigo .= "\n\t" . "});";
-		$codigo .= "\n" . "}";
-		
-		$txt = fopen('./gens/app/js/' . $archivo, 'w');
-		fwrite($txt, $codigo);
-		fclose($txt);
-		$respuesta = array(
-			"tabla"     => $tabla,
-			"json_data" => $json_data,
-			"archivo"   => $archivo
-		);
-		$this -> response($respuesta);
-	}
+	//	public function generaJs_POST(){
+	//		$tabla     = $this -> post('tabla');
+	//		$json_data = json_decode($this -> post('info'), TRUE);
+	//		$archivo   = $tabla . " . js";
+	//		$campos    = '';
+	//		$pk        = '';
+	//		$enteros   = array();
+	//		foreach($json_data as $x => $x_value){
+	//			if($x_value['data_type'] == 'int'){
+	//				array_push($enteros, $x_value['column_name']);
+	//			}
+	//			if($x_value['column_key'] == 'PRI'){
+	//				$pk = $x_value['column_name'];
+	//			}
+	//			if(strlen($campos) != 0){
+	//				$campos .= ", " . $x_value['column_name'];
+	//			}else{
+	//				$campos .= $x_value['column_name'];
+	//			}
+	//		}
+	//		$cuantosIntegers = count($enteros);
+	//		$codigo = "";
+	//		$codigo .= "" . "var elIndex = 'index.php/';";
+	//		$codigo .= "\n" . "var urlServer = '/generacodesrv/';";
+	//		$codigo .= "\n";
+	//		$codigo .= "\n" . "function getAll${tabla}(){";
+	//		foreach($json_data as $x => $x_value){
+	//			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
+	//		}
+	//		$codigo .= "\n\t" . "$.ajax({";
+	//		$codigo .= "\n\t\t" . "url: urlServer + elIndex + '$tabla/getAll$tabla',";
+	//		$codigo .= "\n\t\t" . "type: 'GET',";
+	//		$codigo .= "\n\t\t" . "dataType: 'JSON',";
+	//		$codigo .= "\n\t\t" . "data: {";
+	//		foreach($json_data as $x => $x_value){
+	//			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
+	//		}
+	//		$codigo .= "\n\t\t\t" . "apkiKey: '11071981'";
+	//		$codigo .= "\n\t\t" . "}";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . done(function(res){";
+	//		$codigo .= "\n\t\t" . "console . log('success');";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . fail(function(){";
+	//		$codigo .= "\n\t\t" . "console . log('error');";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . always(function(){";
+	//		$codigo .= "\n\t\t" . "console . log('complete');";
+	//		$codigo .= "\n\t" . "});";
+	//		$codigo .= "\n" . "}";
+	//		$codigo .= "\n";
+	//		$codigo .= "\n" . "function add${tabla}(){";
+	//		foreach($json_data as $x => $x_value){
+	//			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
+	//		}
+	//		$codigo .= "\n\t" . "$.ajax({";
+	//		$codigo .= "\n\t\t" . "url: urlServer + elIndex + '${tabla}/add${tabla}',";
+	//		$codigo .= "\n\t\t" . "type: 'POST',";
+	//		$codigo .= "\n\t\t" . "dataType: 'JSON',";
+	//		$codigo .= "\n\t\t" . "data: {";
+	//		foreach($json_data as $x => $x_value){
+	//			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
+	//		}
+	//		$codigo .= "\n\t\t\t" . "apkiKey: '11071981'";
+	//		$codigo .= "\n\t\t" . "}";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . done(function(res){";
+	//		$codigo .= "\n\t\t" . "console . log('success');";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . fail(function(){";
+	//		$codigo .= "\n\t\t" . "console . log('error');";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . always(function(){";
+	//		$codigo .= "\n\t\t" . "console . log('complete');";
+	//		$codigo .= "\n\t" . "});";
+	//		$codigo .= "\n" . "}";
+	//		$codigo .= "\n";
+	//		$codigo .= "\n" . "function upd${tabla}(){";
+	//		foreach($json_data as $x => $x_value){
+	//			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
+	//		}
+	//		$codigo .= "\n\t" . "$.ajax({";
+	//		$codigo .= "\n\t\t" . "url: urlServer + elIndex + '${tabla}/upd${tabla}',";
+	//		$codigo .= "\n\t\t" . "type: 'POST',";
+	//		$codigo .= "\n\t\t" . "dataType: 'JSON',";
+	//		$codigo .= "\n\t\t" . "data: {";
+	//		foreach($json_data as $x => $x_value){
+	//			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
+	//		}
+	//		$codigo .= "\n\t\t\t" . "apkiKey: '11071981'";
+	//		$codigo .= "\n\t\t" . "}";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . done(function(res){";
+	//		$codigo .= "\n\t\t" . "console . log('success');";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . fail(function(){";
+	//		$codigo .= "\n\t\t" . "console . log('error');";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . always(function(){";
+	//		$codigo .= "\n\t\t" . "console . log('complete');";
+	//		$codigo .= "\n\t" . "});";
+	//		$codigo .= "\n" . "}";
+	//		$codigo .= "\n";
+	//		$codigo .= "\n" . "function del${tabla}(){";
+	//		foreach($json_data as $x => $x_value){
+	//			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
+	//		}
+	//		$codigo .= "\n\t" . "$.ajax({";
+	//		$codigo .= "\n\t\t" . "url: urlServer + elIndex + '${tabla}/del${tabla}',";
+	//		$codigo .= "\n\t\t" . "type: 'POST',";
+	//		$codigo .= "\n\t\t" . "dataType: 'JSON',";
+	//		$codigo .= "\n\t\t" . "data: {";
+	//		foreach($json_data as $x => $x_value){
+	//			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
+	//		}
+	//		$codigo .= "\n\t\t" . "apkiKey: '11071981'";
+	//		$codigo .= "\n\t\t" . "}";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . done(function(res){";
+	//		$codigo .= "\n\t\t" . "console . log('success');";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . fail(function(){";
+	//		$codigo .= "\n\t\t" . "console . log('error');";
+	//		$codigo .= "\n\t" . "})";
+	//		$codigo .= "\n\t" . " . always(function(){";
+	//		$codigo .= "\n\t\t" . "console . log('complete');";
+	//		$codigo .= "\n\t" . "});";
+	//		$codigo .= "\n" . "}";
+	//		$txt = fopen('./gens/app/js/' . $archivo, 'w');
+	//		fwrite($txt, $codigo);
+	//		fclose($txt);
+	//		$respuesta = array(
+	//			"tabla"     => $tabla,
+	//			"json_data" => $json_data,
+	//			"archivo"   => $archivo
+	//		);
+	//		$this -> response($respuesta);
+	//	}
 }

@@ -14,7 +14,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 	<meta charset="UTF-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>GeneraCode</title>
+	<title>Genera REST - CI</title>
 	<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
 </head>
 
@@ -80,13 +80,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 </body>
 <script src="node_modules/jquery/dist/jquery.min.js"></script>
-<script src="node_modules/popper.js/dist/popper.min.js"></script>
+<script src="node_modules/popper.js/dist/umd/popper.min.js"></script>
 <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="assets/app/js/core.js"></script>
 <script language="javascript" charset="utf-8">
-	cargaScript('assets/app/js/index.js', function(){
-	});
-	cargaScript('assets/app/js/archivos.js', function(){
+	cargaScript('assets/app/js/config.js', function(){
+		cargaScript('assets/app/js/index.js', function(){
+		});
 	});
 </script>
 
