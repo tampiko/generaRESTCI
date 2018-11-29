@@ -1,0 +1,31 @@
+.btnClick {
+	cursor: pointer;
+}
+.texto-izquierda {
+	text-align: left;
+}
+.pmd-content {
+	margin-left: 0px;
+}
+.dashboard {
+	margin-top: -70px;
+}
+#content {
+	left: 0px;
+}
+.pmd-content {
+	min-height: 95%;
+}
+.admin-footer {
+	margin-top: -10px;
+}
+/*.pmd-card {*/
+.btnRespuesta{
+	cursor: pointer;
+}
+.dashboard .pmd-card-body, .dashboard .notification .content-section {
+	min-height: 10px;
+}
+#divTiempo{
+	color:white;
+}
