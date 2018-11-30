@@ -10,9 +10,9 @@ class Tabla extends REST_Controller{
 	
 	public function __construct(){
 		parent ::__construct();
-		// if (!$this->input->is_ajax_request()) {
-		//     exit('No direct script access allowed');
-		// }
+		 if (!$this->input->is_ajax_request()) {
+		     exit('No direct script access allowed');
+		 }
 		$this -> load -> model('Tabla_model', 'tablaM');
 		$this -> load -> model('DetallesTabla_model', 'dtM');
 	}
