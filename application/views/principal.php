@@ -9,66 +9,83 @@ defined('BASEPATH') or exit('No direct script access allowed');
 ?>
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 	<meta charset="UTF-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Genera REST - CI</title>
 	<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="node_modules/font-awesome/css/font-awesome.min.css">
 	<link rel="stylesheet" href="assets/app/css/styles.css">
 </head>
 
 <body>
-<div class="container">
+
+<nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark">
+	<a class="navbar-brand" href="#">Genera REST - CI</a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+	        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+				<a class="nav-link" href="#">Generar</a>
+			</li>
+		</ul>
+	</div>
+</nav>
+
+
+<div class="container mt-3">
+	<form>
+		<div class="form-group row">
+			<label for="bdatos" class="col-sm-2 col-form-label">Base de Datos</label>
+			<div class="col-sm-5">
+				<select class="form-control" name="bdatos" id="bdatos"></select>
+			</div>
+		</div>
+	</form>
 	
-	<h2>Base de Datos :</h2>
-	<table class="table table-bordered table-striped table-condensed table-responsive table-hover">
+	<table id="tTablas" class="table table-bordered table-sm table-responsive-sm table-hover table-striped oculto">
 		<thead>
-			<tr>
-				<td colspan="2">Genera REST - CI</td>
-			</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td colspan="3" class="text-center text-monospace">Generar</td>
+		</tr>
+		<tr>
+			<td width="70%" class="text-monospace">Tabla</td>
+			<td width="10%" class="text-monospace text-center">
+				Controlador
+				<button type="button" class="btn btn-info" id="btnSelTodosControlador">
+					<span class="fa fa-hand-o-down"></span>
+				</button>
+			</td>
+			<td width="10%" class="text-monospace text-center">
+				Modelo
+				<button type="button" class="btn btn-info" id="btnSelTodosModelo">
+					<span class="fa fa-hand-o-down"></span>
+				</button>
+			</td>
+			<td width="10%" class="text-monospace text-center">
+				Js<br>
+				<button type="button" class="btn btn-info" id="btnSelTodosJs">
+					<span class="fa fa-hand-o-down"></span>
+				</button>
+			</td>
+		</tr>
 		</thead>
-		
-		<tbody>
-		<tr>
-			<td>Base de Datos</td>
-			<td>
-				<select name="bdatos" id="bdatos"></select>
-			</td>
-		</tr>
-		<tr>
-			<td>Tabla</td>
-			<td>
-				<select name="tabla" id="tabla"></select>
-			</td>
-		</tr>
-		</tbody>
-		
+		<tbody id="tcontenidoTablas"></tbody>
 		<tfoot>
 		<tr>
-			<td>
-				<button class="btn btn-outline-primary" type="button" id="btnGeneraController">Genera Controller</button>
-			</td>
-			<td>
-				<button class="btn btn-outline-primary" type="button" id="btnGeneraModel">Genera Model</button>
-			</td>
-			<td>
-				<button class="btn btn-outline-primary" type="button" id="btnGeneraJS">Genera JS</button>
-			</td>
-			<td>
-				<button class="btn btn-outline-primary" type="button" id="btnGeneraDoble">Genera Doble</button>
+			<td colspan="4">
+				<div class="col-md-8" id="divMensajes"></div>
 			</td>
 		</tr>
 		</tfoot>
 	</table>
-	
-	<div class="col-md-8" id="divMensajes">
-		<td>
-			<button class="btn btn-outline-primary" type="button" id="btnDescargar">Genera Link de Descarga</button>
-			<hr/>
-	</div>
-
+	<input type="hidden" id="todos" value="0">
+	<input type="hidden" id="cuantos" value="0">
 </div>
 
 <!-- Modal -->
@@ -91,7 +108,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Aceptar</button>
 			</div>
-			
+		
 		</div>
 	</div>
 </div>
