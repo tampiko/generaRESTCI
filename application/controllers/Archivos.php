@@ -17,33 +17,37 @@ class Archivos extends REST_Controller{
 			'Sistema'    => 'CI - GeneraCode',
 			'Controller' => 'Archivos'
 		);
-		$this -> response($res);
+		$this -> response($res, 200);
 	}
 	
 	public function generaZip_GET(){
 		/* Nombre del Archivo Generado */
 		$archivoZip = $_GET['nombre'];
 		
-		/* Para guardar los archivos que se agregan (version 2, agergar y eliminar archivos mediante esta variable) */
+		/* Para guardar y eliminar los archivos que se agregan */
 		$archivos = array();
 		
-		/* Directorio a crear en el zip */
-		$dirC = 'application/controllers';
-		
-		/* Directorio a crear en el zip */
-		$dirM = 'application/models';
+		$dirs = array(
+			"J" => "app/js",
+			"M" => "application/models",
+			"C" => "application/controllers"
+		);
 		
 		/* Genera un archivo zip para despues crear uno limpio */
 		$zip_old = new ZipArchive();
 		$zip_old -> open("gens/" . $archivoZip, ZipArchive::CREATE);
-		$zip_old -> addEmptyDir($dirC);
-		$zip_old -> addEmptyDir($dirM);
+		$zip_old -> addEmptyDir($dirs["J"]);
+		$zip_old -> addEmptyDir($dirs["M"]);
+		$zip_old -> addEmptyDir($dirs["C"]);
 		$zip_old -> close();
 		unlink('gens/' . $archivoZip);
 		$zip_new = new ZipArchive();
 		$zip_new -> open("gens/" . $archivoZip, ZipArchive::CREATE);
-		$zip_new -> addEmptyDir($dirC);
-		$zip_new -> addEmptyDir($dirM);
+		$zip_new -> addEmptyDir($dirs["J"]);
+		$zip_new -> addEmptyDir($dirs["M"]);
+		$zip_new -> addEmptyDir($dirs["C"]);
+		
+		/* Modelos */
 		$modelos = dir('gens/application/models');
 		while(($file = $modelos -> read()) !== FALSE){
 			if($file != "." && $file != ".." && $file != ".gitkeep"){
@@ -52,6 +56,9 @@ class Archivos extends REST_Controller{
 			}
 		}
 		$modelos -> close();
+		/* Modelos */
+		
+		/* Controladores */
 		$controladores = dir('gens/application/controllers');
 		while(($file = $controladores -> read()) !== FALSE){
 			if($file != "." && $file != ".." && $file != ".gitkeep"){
@@ -60,8 +67,22 @@ class Archivos extends REST_Controller{
 			}
 		}
 		$controladores -> close();
+		/* Controladores */
+		
+		/* Archivos JS */
+		$archivosJs = dir('gens/app/js');
+		while(($file = $archivosJs -> read()) !== FALSE){
+			if($file != "." && $file != ".." && $file != ".gitkeep"){
+				$zip_new -> addFile("gens/app/js/" . $file, "app/js/" . $file);
+				array_push($archivos, "gens/app/js/" . $file);
+			}
+		}
+		$archivosJs -> close();
+		/* Archivos JS */
+		
 		$zip_new -> close();
 		
+		/* Elimina Modelos */
 		$modelos = dir('gens/application/models');
 		while(($file = $modelos -> read()) !== FALSE){
 			if($file != "." && $file != ".." && $file != ".gitkeep"){
@@ -69,7 +90,9 @@ class Archivos extends REST_Controller{
 			}
 		}
 		$modelos -> close();
+		/* Elimina Modelos */
 		
+		/* Elimina Controladores */
 		$controladores = dir('gens/application/controllers');
 		while(($file = $controladores -> read()) !== FALSE){
 			if($file != "." && $file != ".." && $file != ".gitkeep"){
@@ -77,16 +100,26 @@ class Archivos extends REST_Controller{
 			}
 		}
 		$controladores -> close();
+		/* Elimina Controladores */
+		
+		/* Elimina Archivos Js */
+		$archivosJs = dir('gens/app/js');
+		while(($file = $archivosJs -> read()) !== FALSE){
+			if($file != "." && $file != ".." && $file != ".gitkeep"){
+				unlink("gens/app/js/" . $file);
+			}
+		}
+		$archivosJs -> close();
+		/* Elimina Archivos Js */
 		
 		$page_url = (isset($_SERVER['HTTPS']) ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
-		
-		$res = array(
+		$res      = array(
 			'error'    => FALSE,
 			'archivos' => $archivos,
 			'url'      => $page_url,
 			'zip'      => $archivoZip
 		);
-		$this -> response($res);
+		$this -> response($res, 200);
 	}
 	
 	public function generaController_POST(){
@@ -97,6 +130,10 @@ class Archivos extends REST_Controller{
 		$campos        = '';
 		$pk            = '';
 		$enteros       = array();
+		$modelo        = $tabla . "_model";
+		$model         = "M" . $tabla;
+		$txt           = fopen($dirController . $archivo, 'c', 1);
+		
 		foreach($json_data as $x => $x_value){
 			if($x_value['data_type'] == 'int'){
 				array_push($enteros, $x_value['column_name']);
@@ -111,10 +148,6 @@ class Archivos extends REST_Controller{
 			}
 		}
 		//		$cuantosIntegers = count($enteros);
-		$modelo = $tabla . "_model";
-		$model  = "M" . $tabla;
-		
-		$txt = fopen($dirController . $archivo, 'c', 1);
 		fwrite($txt, '<?php');
 		fwrite($txt, "\n");
 		fwrite($txt, "\n" . "use Restserver\Libraries\REST_Controller;");
@@ -136,7 +169,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t\t" . "'Tipo'       => 'GET',");
 		fwrite($txt, "\n\t\t\t" . "'Controller' => '$tabla'");
 		fwrite($txt, "\n\t\t" . ");");
-		fwrite($txt, "\n\t\t" . "\$this -> response(\$res);");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
 		fwrite($txt, "\n\t" . "public function index_POST(){");
@@ -145,19 +178,19 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t\t" . "'Tipo'       => 'POST',");
 		fwrite($txt, "\n\t\t\t" . "'Controller' => '$tabla'");
 		fwrite($txt, "\n\t\t" . ");");
-		fwrite($txt, "\n\t\t" . "\$this -> response(\$res);");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
 		fwrite($txt, "\n\t" . "function getAll$tabla" . "_GET(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> get();");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
 		fwrite($txt, "\n\t\t" . "\$$tabla = \$this -> $model -> getAll$tabla();");
-		fwrite($txt, "\n\t\t" . "\$respuesta = array(");
+		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
 		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla loaded',");
 		fwrite($txt, "\n\t\t\t" . "'data' => \$$tabla");
 		fwrite($txt, "\n\t\t" . ");");
-		fwrite($txt, "\n\t\t" . "\$this -> response(\$respuesta);");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
 		fwrite($txt, "\n\t" . "function get$tabla" . "_GET(){");
@@ -165,23 +198,23 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
 		fwrite($txt, "\n\t\t" . "\$where = array('$pk' => info['$pk']);");
 		fwrite($txt, "\n\t\t" . "\$$tabla = \$this -> $model -> get$tabla(\$where);");
-		fwrite($txt, "\n\t\t" . "\$respuesta = array(");
+		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
 		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla loaded',");
 		fwrite($txt, "\n\t\t\t" . "'data' => \$$tabla");
 		fwrite($txt, "\n\t\t" . ");");
-		fwrite($txt, "\n\t\t" . "\$this -> response(\$respuesta);");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "\n\t" . "}");
 		fwrite($txt, "\n");
 		fwrite($txt, "\n\tfunction add$tabla" . "_POST(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
 		fwrite($txt, "\n\t\t" . "\$this -> $model -> add$tabla(\$info);");
-		fwrite($txt, "\n\t\t" . "\$respuesta = array(");
+		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
 		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla added.'");
 		fwrite($txt, "\n\t\t" . ");");
-		fwrite($txt, "\n\t\t" . "\$this -> response(\$respuesta);");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
 		fwrite($txt, "\n\t" . "function upd$tabla" . "_POST(){");
@@ -190,11 +223,11 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
 		fwrite($txt, "\n\t\t" . "unset(\$info['$pk']);");
 		fwrite($txt, "\n\t\t" . "\$this -> $model -> upd$tabla(\$$pk, \$info);");
-		fwrite($txt, "\n\t\t" . "\$respuesta = array(");
+		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'error'   => FALSE,");
 		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla updated.'");
 		fwrite($txt, "\n\t\t" . ");");
-		fwrite($txt, "\n\t\t" . "\$this -> response(\$respuesta);");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
 		fwrite($txt, "\n\t" . "function del$tabla" . "_POST(){");
@@ -203,35 +236,37 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
 		fwrite($txt, "\n\t\t" . "unset(\$info['$pk']);");
 		fwrite($txt, "\n\t\t" . "\$this -> $model -> del$tabla(\$$pk, \$info);");
-		fwrite($txt, "\n\t\t" . "\$respuesta = array(");
+		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
 		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla deleted.'");
 		fwrite($txt, "\n\t\t" . ");");
-		fwrite($txt, "\n\t\t" . "\$this -> response(\$respuesta);");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
 		fwrite($txt, "\n");
 		fwrite($txt, "}");
 		fclose($txt);
 		
-		$respuesta = array(
+		$res = array(
 			'Sistema'    => 'CI - GeneraCode',
 			'Controller' => 'Archivos',
 			'Funcion'    => 'generaController',
 			'Tabla'      => $tabla,
 			'Info'       => $json_data
 		);
-		$this -> response($respuesta);
+		$this -> response($res, 200);
 	}
 	
 	public function generaModel_POST(){
 		$dirModel  = './gens/application/models/';
 		$tabla     = $this -> post('tabla');
 		$json_data = json_decode($this -> post('info'), TRUE);
-		$archivo   = $tabla . "_model . php";
+		$archivo   = $tabla . "_model.php";
 		$campos    = '';
 		$pk        = '';
 		$enteros   = array();
+		$txt       = fopen($dirModel . $archivo, 'w');
+		
 		foreach($json_data as $x => $x_value){
 			if($x_value['data_type'] == 'int'){
 				array_push($enteros, $x_value['column_name']);
@@ -246,7 +281,6 @@ class Archivos extends REST_Controller{
 			}
 		}
 		$cuantosIntegers = count($enteros);
-		$txt             = fopen($dirModel . $archivo, 'w');
 		fwrite($txt, " <?php");
 		fwrite($txt, "\n" . "defined('BASEPATH') or exit('No direct script access allowed');");
 		fwrite($txt, "\n" . "class $tabla" . "_model extends CI_Model{");
@@ -307,9 +341,9 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "return \$this -> db -> update('" . strtolower($tabla) . "', \$datos);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\r" . "}");
+		fwrite($txt, "\n" . "}");
 		fclose($txt);
-		$respuesta = array(
+		$res = array(
 			'Sistema'    => 'CI - GeneraCode',
 			'Controller' => 'Archivos',
 			'Funcion'    => 'generaModel',
@@ -317,145 +351,145 @@ class Archivos extends REST_Controller{
 			'Info'       => $json_data
 		);
 		
-		$this -> response($respuesta);
+		$this -> response($res, 200);
 	}
 	
-	//	public function generaJs_POST(){
-	//		$tabla     = $this -> post('tabla');
-	//		$json_data = json_decode($this -> post('info'), TRUE);
-	//		$archivo   = $tabla . " . js";
-	//		$campos    = '';
-	//		$pk        = '';
-	//		$enteros   = array();
-	//		foreach($json_data as $x => $x_value){
-	//			if($x_value['data_type'] == 'int'){
-	//				array_push($enteros, $x_value['column_name']);
-	//			}
-	//			if($x_value['column_key'] == 'PRI'){
-	//				$pk = $x_value['column_name'];
-	//			}
-	//			if(strlen($campos) != 0){
-	//				$campos .= ", " . $x_value['column_name'];
-	//			}else{
-	//				$campos .= $x_value['column_name'];
-	//			}
-	//		}
-	//		$cuantosIntegers = count($enteros);
-	//		$codigo = "";
-	//		$codigo .= "" . "var elIndex = 'index.php/';";
-	//		$codigo .= "\n" . "var urlServer = '/generacodesrv/';";
-	//		$codigo .= "\n";
-	//		$codigo .= "\n" . "function getAll${tabla}(){";
-	//		foreach($json_data as $x => $x_value){
-	//			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
-	//		}
-	//		$codigo .= "\n\t" . "$.ajax({";
-	//		$codigo .= "\n\t\t" . "url: urlServer + elIndex + '$tabla/getAll$tabla',";
-	//		$codigo .= "\n\t\t" . "type: 'GET',";
-	//		$codigo .= "\n\t\t" . "dataType: 'JSON',";
-	//		$codigo .= "\n\t\t" . "data: {";
-	//		foreach($json_data as $x => $x_value){
-	//			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
-	//		}
-	//		$codigo .= "\n\t\t\t" . "apkiKey: '11071981'";
-	//		$codigo .= "\n\t\t" . "}";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . done(function(res){";
-	//		$codigo .= "\n\t\t" . "console . log('success');";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . fail(function(){";
-	//		$codigo .= "\n\t\t" . "console . log('error');";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . always(function(){";
-	//		$codigo .= "\n\t\t" . "console . log('complete');";
-	//		$codigo .= "\n\t" . "});";
-	//		$codigo .= "\n" . "}";
-	//		$codigo .= "\n";
-	//		$codigo .= "\n" . "function add${tabla}(){";
-	//		foreach($json_data as $x => $x_value){
-	//			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
-	//		}
-	//		$codigo .= "\n\t" . "$.ajax({";
-	//		$codigo .= "\n\t\t" . "url: urlServer + elIndex + '${tabla}/add${tabla}',";
-	//		$codigo .= "\n\t\t" . "type: 'POST',";
-	//		$codigo .= "\n\t\t" . "dataType: 'JSON',";
-	//		$codigo .= "\n\t\t" . "data: {";
-	//		foreach($json_data as $x => $x_value){
-	//			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
-	//		}
-	//		$codigo .= "\n\t\t\t" . "apkiKey: '11071981'";
-	//		$codigo .= "\n\t\t" . "}";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . done(function(res){";
-	//		$codigo .= "\n\t\t" . "console . log('success');";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . fail(function(){";
-	//		$codigo .= "\n\t\t" . "console . log('error');";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . always(function(){";
-	//		$codigo .= "\n\t\t" . "console . log('complete');";
-	//		$codigo .= "\n\t" . "});";
-	//		$codigo .= "\n" . "}";
-	//		$codigo .= "\n";
-	//		$codigo .= "\n" . "function upd${tabla}(){";
-	//		foreach($json_data as $x => $x_value){
-	//			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
-	//		}
-	//		$codigo .= "\n\t" . "$.ajax({";
-	//		$codigo .= "\n\t\t" . "url: urlServer + elIndex + '${tabla}/upd${tabla}',";
-	//		$codigo .= "\n\t\t" . "type: 'POST',";
-	//		$codigo .= "\n\t\t" . "dataType: 'JSON',";
-	//		$codigo .= "\n\t\t" . "data: {";
-	//		foreach($json_data as $x => $x_value){
-	//			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
-	//		}
-	//		$codigo .= "\n\t\t\t" . "apkiKey: '11071981'";
-	//		$codigo .= "\n\t\t" . "}";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . done(function(res){";
-	//		$codigo .= "\n\t\t" . "console . log('success');";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . fail(function(){";
-	//		$codigo .= "\n\t\t" . "console . log('error');";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . always(function(){";
-	//		$codigo .= "\n\t\t" . "console . log('complete');";
-	//		$codigo .= "\n\t" . "});";
-	//		$codigo .= "\n" . "}";
-	//		$codigo .= "\n";
-	//		$codigo .= "\n" . "function del${tabla}(){";
-	//		foreach($json_data as $x => $x_value){
-	//			$codigo .= "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();";
-	//		}
-	//		$codigo .= "\n\t" . "$.ajax({";
-	//		$codigo .= "\n\t\t" . "url: urlServer + elIndex + '${tabla}/del${tabla}',";
-	//		$codigo .= "\n\t\t" . "type: 'POST',";
-	//		$codigo .= "\n\t\t" . "dataType: 'JSON',";
-	//		$codigo .= "\n\t\t" . "data: {";
-	//		foreach($json_data as $x => $x_value){
-	//			$codigo .= "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",";
-	//		}
-	//		$codigo .= "\n\t\t" . "apkiKey: '11071981'";
-	//		$codigo .= "\n\t\t" . "}";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . done(function(res){";
-	//		$codigo .= "\n\t\t" . "console . log('success');";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . fail(function(){";
-	//		$codigo .= "\n\t\t" . "console . log('error');";
-	//		$codigo .= "\n\t" . "})";
-	//		$codigo .= "\n\t" . " . always(function(){";
-	//		$codigo .= "\n\t\t" . "console . log('complete');";
-	//		$codigo .= "\n\t" . "});";
-	//		$codigo .= "\n" . "}";
-	//		$txt = fopen('./gens/app/js/' . $archivo, 'w');
-	//		fwrite($txt, $codigo);
-	//		fclose($txt);
-	//		$respuesta = array(
-	//			"tabla"     => $tabla,
-	//			"json_data" => $json_data,
-	//			"archivo"   => $archivo
-	//		);
-	//		$this -> response($respuesta);
-	//	}
+	public function generaJs_POST(){
+		$dirJs     = './gens/app/js/';
+		$tabla     = $this -> post('tabla');
+		$json_data = json_decode($this -> post('info'), TRUE);
+		$archivo   = $tabla . ".js";
+		$campos    = '';
+		$pk        = '';
+		$enteros   = array();
+		$txt       = fopen($dirJs . $archivo, 'w');
+		
+		foreach($json_data as $x => $x_value){
+			if($x_value['data_type'] == 'int'){
+				array_push($enteros, $x_value['column_name']);
+			}
+			if($x_value['column_key'] == 'PRI'){
+				$pk = $x_value['column_name'];
+			}
+			if(strlen($campos) != 0){
+				$campos .= ", " . $x_value['column_name'];
+			}else{
+				$campos .= $x_value['column_name'];
+			}
+		}
+		$cuantosIntegers = count($enteros);
+		fwrite($txt, "var elIndex = 'index.php/';");
+		fwrite($txt, "\n" . "var urlServer = '/generacodesrv/';");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n" . "function getAll${tabla}(){");
+		foreach($json_data as $x => $x_value){
+			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+		}
+		fwrite($txt, "\n\t" . "$.ajax({");
+		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '$tabla/getAll$tabla',");
+		fwrite($txt, "\n\t\t" . "type: 'GET',");
+		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
+		fwrite($txt, "\n\t\t" . "data: {");
+		foreach($json_data as $x => $x_value){
+			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+		}
+		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
+		fwrite($txt, "\n\t\t" . "}");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".done(function(res){");
+		fwrite($txt, "\n\t\t" . "console.log('success');");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".fail(function(){");
+		fwrite($txt, "\n\t\t" . "console.log('error');");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".always(function(){");
+		fwrite($txt, "\n\t\t" . "console.log('complete');");
+		fwrite($txt, "\n\t" . "});");
+		fwrite($txt, "\n" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n" . "function add${tabla}(){");
+		foreach($json_data as $x => $x_value){
+			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+		}
+		fwrite($txt, "\n\t" . "$.ajax({");
+		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '${tabla}/add${tabla}',");
+		fwrite($txt, "\n\t\t" . "type: 'POST',");
+		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
+		fwrite($txt, "\n\t\t" . "data: {");
+		foreach($json_data as $x => $x_value){
+			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+		}
+		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
+		fwrite($txt, "\n\t\t" . "}");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".done(function(res){");
+		fwrite($txt, "\n\t\t" . "console.log('success');");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".fail(function(){");
+		fwrite($txt, "\n\t\t" . "console.log('error');");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".always(function(){");
+		fwrite($txt, "\n\t\t" . "console.log('complete');");
+		fwrite($txt, "\n\t" . "});");
+		fwrite($txt, "\n" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n" . "function upd${tabla}(){");
+		foreach($json_data as $x => $x_value){
+			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+		}
+		fwrite($txt, "\n\t" . "$.ajax({");
+		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '${tabla}/upd${tabla}',");
+		fwrite($txt, "\n\t\t" . "type: 'POST',");
+		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
+		fwrite($txt, "\n\t\t" . "data: {");
+		foreach($json_data as $x => $x_value){
+			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+		}
+		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
+		fwrite($txt, "\n\t\t" . "}");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".done(function(res){");
+		fwrite($txt, "\n\t\t" . "console.log('success');");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".fail(function(){");
+		fwrite($txt, "\n\t\t" . "console.log('error');");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".always(function(){");
+		fwrite($txt, "\n\t\t" . "console.log('complete');");
+		fwrite($txt, "\n\t" . "});");
+		fwrite($txt, "\n" . "}");
+		fwrite($txt, "\n");
+		fwrite($txt, "\n" . "function del${tabla}(){");
+		foreach($json_data as $x => $x_value){
+			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+		}
+		fwrite($txt, "\n\t" . "$.ajax({");
+		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '${tabla}/del${tabla}',");
+		fwrite($txt, "\n\t\t" . "type: 'POST',");
+		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
+		fwrite($txt, "\n\t\t" . "data: {");
+		foreach($json_data as $x => $x_value){
+			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+		}
+		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
+		fwrite($txt, "\n\t\t" . "}");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".done(function(res){");
+		fwrite($txt, "\n\t\t" . "console.log('success');");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".fail(function(){");
+		fwrite($txt, "\n\t\t" . "console.log('error');");
+		fwrite($txt, "\n\t" . "})");
+		fwrite($txt, "\n\t" . ".always(function(){");
+		fwrite($txt, "\n\t\t" . "console.log('complete');");
+		fwrite($txt, "\n\t" . "});");
+		fwrite($txt, "\n" . "}");
+		fclose($txt);
+		$res = array(
+			"tabla"     => $tabla,
+			"json_data" => $json_data,
+			"archivo"   => $archivo
+		);
+		$this -> response($res, 200);
+	}
 }
