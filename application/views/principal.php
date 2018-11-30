@@ -16,9 +16,13 @@ defined('BASEPATH') or exit('No direct script access allowed');
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Genera REST - CI</title>
 	<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="assets/app/css/styles.css">
 </head>
 
 <body>
+<div class="container">
+
+
 <h2>Base de Datos :</h2>
 <table class="table table-bordered table-striped table-condensed table-responsive table-hover">
 	<thead></thead>
@@ -45,17 +49,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
 			<button class="btn btn-outline-primary" type="button" id="btnGeneraModel">Genera Model</button>
 		</td>
 		<td>
+			<button class="btn btn-outline-primary" type="button" id="btnGeneraJS">Genera JS</button>
+		</td>
+		<td>
 			<button class="btn btn-outline-primary" type="button" id="btnGeneraDoble">Genera Doble</button>
 		</td>
 	</tr>
 	</tfoot>
 </table>
-<div class="col-md-5" id="divMensajes">
+<div class="col-md-8" id="divMensajes">
 	<td>
 		<button class="btn btn-outline-primary" type="button" id="btnDescargar">Genera Link de Descarga</button>
 		<hr/>
 </div>
-
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="modalError" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
