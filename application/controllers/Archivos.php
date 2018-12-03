@@ -135,19 +135,19 @@ class Archivos extends REST_Controller{
 		$txt           = fopen($dirController . $archivo, 'c', 1);
 		
 		foreach($json_data as $x => $x_value){
-			if($x_value['data_type'] == 'int'){
-				array_push($enteros, $x_value['column_name']);
+			if($x_value['DATA_TYPE'] == 'int'){
+				array_push($enteros, $x_value['COLUMN_NAME']);
 			}
-			if($x_value['column_key'] == 'PRI'){
-				$pk = $x_value['column_name'];
+			if($x_value['COLUMN_KEY'] == 'PRI'){
+				$pk = $x_value['COLUMN_NAME'];
 			}
 			if(strlen($campos) != 0){
-				$campos .= ", " . $x_value['column_name'];
+				$campos .= ", " . $x_value['COLUMN_NAME'];
 			}else{
-				$campos .= $x_value['column_name'];
+				$campos .= $x_value['COLUMN_NAME'];
 			}
 		}
-		//		$cuantosIntegers = count($enteros);
+		$cuantosIntegers = count($enteros);
 		fwrite($txt, '<?php');
 		fwrite($txt, "\n");
 		fwrite($txt, "\n" . "use Restserver\Libraries\REST_Controller;");
@@ -268,16 +268,16 @@ class Archivos extends REST_Controller{
 		$txt       = fopen($dirModel . $archivo, 'w');
 		
 		foreach($json_data as $x => $x_value){
-			if($x_value['data_type'] == 'int'){
-				array_push($enteros, $x_value['column_name']);
+			if($x_value['DATA_TYPE'] == 'int'){
+				array_push($enteros, $x_value['COLUMN_NAME']);
 			}
-			if($x_value['column_key'] == 'PRI'){
-				$pk = $x_value['column_name'];
+			if($x_value['COLUMN_KEY'] == 'PRI'){
+				$pk = $x_value['COLUMN_NAME'];
 			}
 			if(strlen($campos) != 0){
-				$campos .= ", " . $x_value['column_name'];
+				$campos .= ", " . $x_value['COLUMN_NAME'];
 			}else{
-				$campos .= $x_value['column_name'];
+				$campos .= $x_value['COLUMN_NAME'];
 			}
 		}
 		$cuantosIntegers = count($enteros);
@@ -287,7 +287,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n");
 		fwrite($txt, "\n");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\t" . 'public $' . $x_value['column_name'] . ";");
+			fwrite($txt, "\t" . 'public $' . $x_value['COLUMN_NAME'] . ";");
 			fwrite($txt, "\n");
 		}
 		fwrite($txt, "\n\t" . "public function __construct(){");
@@ -365,16 +365,16 @@ class Archivos extends REST_Controller{
 		$txt       = fopen($dirJs . $archivo, 'w');
 		
 		foreach($json_data as $x => $x_value){
-			if($x_value['data_type'] == 'int'){
-				array_push($enteros, $x_value['column_name']);
+			if($x_value['DATA_TYPE'] == 'int'){
+				array_push($enteros, $x_value['COLUMN_NAME']);
 			}
-			if($x_value['column_key'] == 'PRI'){
-				$pk = $x_value['column_name'];
+			if($x_value['COLUMN_KEY'] == 'PRI'){
+				$pk = $x_value['COLUMN_NAME'];
 			}
 			if(strlen($campos) != 0){
-				$campos .= ", " . $x_value['column_name'];
+				$campos .= ", " . $x_value['COLUMN_NAME'];
 			}else{
-				$campos .= $x_value['column_name'];
+				$campos .= $x_value['COLUMN_NAME'];
 			}
 		}
 		$cuantosIntegers = count($enteros);
@@ -383,7 +383,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n");
 		fwrite($txt, "\n" . "function getAll${tabla}(){");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+			fwrite($txt, "\n\t" . $x_value['COLUMN_NAME'] . " = \$('" . $x_value['COLUMN_NAME'] . "').val();");
 		}
 		fwrite($txt, "\n\t" . "$.ajax({");
 		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '$tabla/getAll$tabla',");
@@ -391,7 +391,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
 		fwrite($txt, "\n\t\t" . "data: {");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+			fwrite($txt, "\n\t\t\t" . $x_value['COLUMN_NAME'] . ' : ' . $x_value['COLUMN_NAME'] . ",");
 		}
 		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
 		fwrite($txt, "\n\t\t" . "}");
@@ -409,7 +409,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n");
 		fwrite($txt, "\n" . "function add${tabla}(){");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+			fwrite($txt, "\n\t" . $x_value['COLUMN_NAME'] . " = \$('" . $x_value['COLUMN_NAME'] . "').val();");
 		}
 		fwrite($txt, "\n\t" . "$.ajax({");
 		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '${tabla}/add${tabla}',");
@@ -417,7 +417,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
 		fwrite($txt, "\n\t\t" . "data: {");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+			fwrite($txt, "\n\t\t\t" . $x_value['COLUMN_NAME'] . ' : ' . $x_value['COLUMN_NAME'] . ",");
 		}
 		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
 		fwrite($txt, "\n\t\t" . "}");
@@ -435,7 +435,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n");
 		fwrite($txt, "\n" . "function upd${tabla}(){");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+			fwrite($txt, "\n\t" . $x_value['COLUMN_NAME'] . " = \$('" . $x_value['COLUMN_NAME'] . "').val();");
 		}
 		fwrite($txt, "\n\t" . "$.ajax({");
 		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '${tabla}/upd${tabla}',");
@@ -443,7 +443,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
 		fwrite($txt, "\n\t\t" . "data: {");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+			fwrite($txt, "\n\t\t\t" . $x_value['COLUMN_NAME'] . ' : ' . $x_value['COLUMN_NAME'] . ",");
 		}
 		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
 		fwrite($txt, "\n\t\t" . "}");
@@ -461,7 +461,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n");
 		fwrite($txt, "\n" . "function del${tabla}(){");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+			fwrite($txt, "\n\t" . $x_value['COLUMN_NAME'] . " = \$('" . $x_value['COLUMN_NAME'] . "').val();");
 		}
 		fwrite($txt, "\n\t" . "$.ajax({");
 		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '${tabla}/del${tabla}',");
@@ -469,7 +469,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
 		fwrite($txt, "\n\t\t" . "data: {");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+			fwrite($txt, "\n\t\t\t" . $x_value['COLUMN_NAME'] . ' : ' . $x_value['COLUMN_NAME'] . ",");
 		}
 		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
 		fwrite($txt, "\n\t\t" . "}");

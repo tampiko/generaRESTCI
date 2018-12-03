@@ -92,24 +92,26 @@ function getTablasDeBD(){
 			bdatos: bdatos
 		}
 	}).done(function(res){
+		console.log(res);
 		$("#tabla").html('');
 		$("#tcontenidoTablas").html('');
 		$.each(res.data, function(index, el){
-			$("#tabla").append(`<option value="${el.table_name.toLowerCase()}">${el.table_name.toLowerCase()}</option>`);
+			getInfoTabla(el.TABLE_NAME.toLowerCase());
+			$("#tabla").append(`<option value="${el.TABLE_NAME.toLowerCase()}">${el.TABLE_NAME.toLowerCase()}</option>`);
 			$("#tcontenidoTablas").append(`
 			<tr>
-				<td width="70%" class="text-monospace">${el.table_name.toLowerCase()}</td>
-				<td width="10%" class="text-monospace text-center" id="cC${el.table_name.toLowerCase()}">
-					<input type="checkbox" class="${el.table_name.toLowerCase()} controladores" id="controladores" value="${el.table_name.toLowerCase()}" checked="checked">
+				<td width="70%" class="text-monospace">${el.TABLE_NAME.toLowerCase()}</td>
+				<td width="10%" class="text-monospace text-center" id="cC${el.TABLE_NAME.toLowerCase()}">
+					<input type="checkbox" class="${el.TABLE_NAME.toLowerCase()} controladores" id="controladores" value="${el.TABLE_NAME.toLowerCase()}" checked="checked">
 				</td>
-				<td width="10%" class="text-monospace text-center" id="cM${el.table_name.toLowerCase()}">
-					<input type="checkbox" class="${el.table_name.toLowerCase()} modelos" id="modelos" value="${el.table_name.toLowerCase()}" checked="checked">
+				<td width="10%" class="text-monospace text-center" id="cM${el.TABLE_NAME.toLowerCase()}">
+					<input type="checkbox" class="${el.TABLE_NAME.toLowerCase()} modelos" id="modelos" value="${el.TABLE_NAME.toLowerCase()}" checked="checked">
 				</td>
-				<td width="10%" class="text-monospace text-center" id="cJ${el.table_name.toLowerCase()}">
-					<input type="checkbox" class="${el.table_name.toLowerCase()} js" id="js" value="${el.table_name.toLowerCase()}" checked="checked">
+				<td width="10%" class="text-monospace text-center" id="cJ${el.TABLE_NAME.toLowerCase()}">
+					<input type="checkbox" class="${el.TABLE_NAME.toLowerCase()} js" id="js" value="${el.TABLE_NAME.toLowerCase()}" checked="checked">
 				</td>
 				<td>
-					<button type="button" class="btn btn-info fa fa-hand-o-left" onclick="SeleccionaTodos('${el.table_name.toLowerCase()}');"></button>
+					<button type="button" class="btn btn-info fa fa-hand-o-left" onclick="SeleccionaTodos('${el.TABLE_NAME.toLowerCase()}');"></button>
 				</td>
 			</tr>`);
 		});
@@ -124,8 +126,7 @@ function getTablasDeBD(){
 	});
 }
 
-function getInfoTabla(){
-	tabla = $("#tabla").val();
+function getInfoTabla(tabla){
 	$.ajax({
 		url: urlServer + elIndex + 'Tabla/getTablaDetalles',
 		type: 'GET',
@@ -135,7 +136,8 @@ function getInfoTabla(){
 			tabla: tabla
 		}
 	}).done(function(res){
-		localStorage.setItem("detalleTabla", JSON.stringify(res.data));
+		console.log(res);
+		sessionStorage.setItem(tabla, JSON.stringify(res.data));
 	}).fail(function(){
 	}).always(function(){
 	});
@@ -147,7 +149,8 @@ function generaController(tabla){
 	}else{
 		tabla.toLowerCase();
 		tabla = tabla.substring(0, 1).toUpperCase().concat(tabla.substring(1).toLowerCase());
-		info = JSON.parse(localStorage.getItem("detalleTabla"));
+		info = JSON.parse(sessionStorage.getItem("detalleTabla"));
+		console.log(info);
 		$.ajax({
 			url: urlServer + elIndex + 'archivos/generaController',
 			type: 'POST',
@@ -173,7 +176,7 @@ function generaModel(tabla){
 	}else{
 		tabla.toLowerCase();
 		tabla = tabla.substring(0, 1).toUpperCase().concat(tabla.substring(1).toLowerCase());
-		info = JSON.parse(localStorage.getItem("detalleTabla"));
+		info = JSON.parse(sessionStorage.getItem("detalleTabla"));
 		$.ajax({
 			url: urlServer + elIndex + 'archivos/generaModel',
 			type: 'POST',
@@ -199,7 +202,7 @@ function generaJS(tabla){
 	}else{
 		tabla.toLowerCase();
 		tabla = tabla.substring(0, 1).toUpperCase().concat(tabla.substring(1).toLowerCase());
-		info = JSON.parse(localStorage.getItem("detalleTabla"));
+		info = JSON.parse(sessionStorage.getItem("detalleTabla"));
 		$.ajax({
 			url: urlServer + elIndex + 'archivos/generaJs',
 			type: 'POST',

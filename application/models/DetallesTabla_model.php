@@ -2,9 +2,9 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class DetallesTabla_model extends CI_Model{
-	public $column_name;
-	public $data_type;
-	public $column_key;
+	public $COLUMN_NAME;
+	public $DATA_TYPE;
+	public $COLUMN_KEY;
 	
 	public function __construct(){
 		parent ::__construct();

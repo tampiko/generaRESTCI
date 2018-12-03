@@ -2,6 +2,7 @@
 defined('BASEPATH') or exit('No direct script access allowed');
 
 class Bdatos_model extends CI_Model{
+	
 	public $bdatos;
 	
 	public function __construct(){
