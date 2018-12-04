@@ -127,6 +127,7 @@ function getTablasDeBD(){
 }
 
 function getInfoTabla(tabla){
+	tabla.toLowerCase();
 	$.ajax({
 		url: urlServer + elIndex + 'Tabla/getTablaDetalles',
 		type: 'GET',
@@ -148,8 +149,7 @@ function generaController(tabla){
 		$("#modalError").modal('show');
 	}else{
 		tabla.toLowerCase();
-		tabla = tabla.substring(0, 1).toUpperCase().concat(tabla.substring(1).toLowerCase());
-		info = JSON.parse(sessionStorage.getItem("detalleTabla"));
+		info = JSON.parse(sessionStorage.getItem(tabla));
 		console.log(info);
 		$.ajax({
 			url: urlServer + elIndex + 'archivos/generaController',
@@ -175,8 +175,7 @@ function generaModel(tabla){
 		$("#modalError").modal('show');
 	}else{
 		tabla.toLowerCase();
-		tabla = tabla.substring(0, 1).toUpperCase().concat(tabla.substring(1).toLowerCase());
-		info = JSON.parse(sessionStorage.getItem("detalleTabla"));
+		info = JSON.parse(sessionStorage.getItem(tabla));
 		$.ajax({
 			url: urlServer + elIndex + 'archivos/generaModel',
 			type: 'POST',
@@ -201,8 +200,7 @@ function generaJS(tabla){
 		$("#modalError").modal('show');
 	}else{
 		tabla.toLowerCase();
-		tabla = tabla.substring(0, 1).toUpperCase().concat(tabla.substring(1).toLowerCase());
-		info = JSON.parse(sessionStorage.getItem("detalleTabla"));
+		info = JSON.parse(sessionStorage.getItem(tabla));
 		$.ajax({
 			url: urlServer + elIndex + 'archivos/generaJs',
 			type: 'POST',

@@ -123,10 +123,11 @@ class Archivos extends REST_Controller{
 	}
 	
 	public function generaController_POST(){
-		$dirController = './gens/application/controllers/';
 		$tabla         = $this -> post('tabla');
+		$tablaCapital  = ucfirst($tabla);
+		$dirController = './gens/application/controllers/';
 		$json_data     = json_decode($this -> post('info'), TRUE);
-		$archivo       = $tabla . ".php";
+		$archivo       = $tablaCapital . ".php";
 		$campos        = '';
 		$pk            = '';
 		$enteros       = array();
@@ -156,7 +157,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n" . "require APPPATH . 'libraries/REST_Controller.php';");
 		fwrite($txt, "\n" . "require APPPATH . 'libraries/Format.php';");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n" . "class $tabla extends REST_Controller{");
+		fwrite($txt, "\n" . "class $tablaCapital extends REST_Controller{");
 		fwrite($txt, "\n");
 		fwrite($txt, "\n\t" . "public function __construct(){");
 		fwrite($txt, "\n\t\t" . "parent ::__construct();");
