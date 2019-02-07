@@ -30,3 +30,8 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /tests/tests/
 /tests/results/
 /node_modules/*
+gens/application/models/
+
+gens/application/controllers/
+
+gens/app/js/
