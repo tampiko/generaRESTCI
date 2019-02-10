@@ -27,7 +27,9 @@ class Tabla extends REST_Controller{
 	
 	public function getTablasBD_GET(){
 		$url    = $this -> get();
-		$where  = array('table_schema' => $url['bdatos']);
+		$where  = array(
+			'table_schema' => $url['bdatos']
+		);
 		$tablas = $this -> tablaM -> getTablasBD($where);
 		if($tablas == FALSE){
 			$datos = array(
