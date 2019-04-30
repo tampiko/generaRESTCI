@@ -46,6 +46,7 @@ $(function(){
 });
 
 function descargar(){
+	console.log('descargar');
 	$.ajax({
 		url: urlServer + elIndex + 'Archivos/generaZip',
 		type: 'GET',
@@ -67,6 +68,7 @@ function descargar(){
 }
 
 function getBaseDatosAll(){
+	console.log('getBaseDatosAll');
 	$.ajax({
 		url: urlServer + elIndex + 'Bdatos/getBdatos',
 		type: 'GET',
@@ -83,6 +85,7 @@ function getBaseDatosAll(){
 }
 
 function getTablasDeBD(){
+	console.log('getTablasDeBD');
 	bdatos = $("#bdatos").val();
 	$.ajax({
 		url: urlServer + elIndex + 'Tabla/getTablasBD',
@@ -92,26 +95,38 @@ function getTablasDeBD(){
 			bdatos: bdatos
 		}
 	}).done(function(res){
-		console.log(res);
+		//console.log(res);
 		$("#tabla").html('');
 		$("#tcontenidoTablas").html('');
 		$.each(res.data, function(index, el){
-			getInfoTabla(el.TABLE_NAME.toLowerCase());
-			$("#tabla").append(`<option value="${el.TABLE_NAME.toLowerCase()}">${el.TABLE_NAME.toLowerCase()}</option>`);
+			getInfoTabla(el.table_name.toLowerCase());
+			$("#tabla").append(`<option value="${el.table_name.toLowerCase()}">${el.table_name.toLowerCase()}</option>`);
 			$("#tcontenidoTablas").append(`
 			<tr>
-				<td width="70%" class="text-monospace">${el.TABLE_NAME.toLowerCase()}</td>
-				<td width="10%" class="text-monospace text-center" id="cC${el.TABLE_NAME.toLowerCase()}">
-					<input type="checkbox" class="${el.TABLE_NAME.toLowerCase()} controladores" id="controladores" value="${el.TABLE_NAME.toLowerCase()}" checked="checked">
+				<td width="70%" class="text-monospace">${el.table_name.toLowerCase()}</td>
+				<td width="10%" class="text-monospace text-center" id="cC${el.table_name.toLowerCase()}">
+					<input	type="checkbox"
+							class="${el.table_name.toLowerCase()} controladores" 
+							id="controladores" 
+							value="${el.table_name.toLowerCase()}" 
+							checked="checked">
 				</td>
-				<td width="10%" class="text-monospace text-center" id="cM${el.TABLE_NAME.toLowerCase()}">
-					<input type="checkbox" class="${el.TABLE_NAME.toLowerCase()} modelos" id="modelos" value="${el.TABLE_NAME.toLowerCase()}" checked="checked">
+				<td width="10%" class="text-monospace text-center" id="cM${el.table_name.toLowerCase()}">
+					<input	type="checkbox"
+							class="${el.table_name.toLowerCase()} modelos" 
+							id="modelos" 
+							value="${el.table_name.toLowerCase()}" 
+							checked="checked">
 				</td>
-				<td width="10%" class="text-monospace text-center" id="cJ${el.TABLE_NAME.toLowerCase()}">
-					<input type="checkbox" class="${el.TABLE_NAME.toLowerCase()} js" id="js" value="${el.TABLE_NAME.toLowerCase()}" checked="checked">
+				<td width="10%" class="text-monospace text-center" id="cJ${el.table_name.toLowerCase()}">
+					<input	type="checkbox"
+							class="${el.table_name.toLowerCase()} js" 
+							id="js" 
+							value="${el.table_name.toLowerCase()}" 
+							checked="checked">
 				</td>
 				<td>
-					<button type="button" class="btn btn-info fa fa-hand-o-left" onclick="SeleccionaTodos('${el.TABLE_NAME.toLowerCase()}');"></button>
+					<button type="button" class="btn btn-info fa fa-hand-o-left" onclick="SeleccionaTodos('${el.table_name.toLowerCase()}');"></button>
 				</td>
 			</tr>`);
 		});
@@ -127,6 +142,7 @@ function getTablasDeBD(){
 }
 
 function getInfoTabla(tabla){
+	console.log('getInfoTabla');
 	tabla.toLowerCase();
 	$.ajax({
 		url: urlServer + elIndex + 'Tabla/getTablaDetalles',
@@ -137,7 +153,7 @@ function getInfoTabla(tabla){
 			tabla: tabla
 		}
 	}).done(function(res){
-		console.log(res);
+		//console.log(res);
 		sessionStorage.setItem(tabla, JSON.stringify(res.data));
 	}).fail(function(){
 	}).always(function(){
@@ -145,6 +161,7 @@ function getInfoTabla(tabla){
 }
 
 function generaController(tabla){
+	console.log('generaController');
 	if(tabla == null){
 		$("#modalError").modal('show');
 	}else{
@@ -171,6 +188,7 @@ function generaController(tabla){
 }
 
 function generaModel(tabla){
+	console.log('generaModel');
 	if(tabla == null){
 		$("#modalError").modal('show');
 	}else{
@@ -196,6 +214,7 @@ function generaModel(tabla){
 }
 
 function generaJS(tabla){
+	console.log('generaJS');
 	if(tabla == null){
 		$("#modalError").modal('show');
 	}else{
@@ -221,8 +240,10 @@ function generaJS(tabla){
 }
 
 function generarArchivos(){
+	console.log('generarArchivos');
 	$('input[type=checkbox]:checked').each(function(){
 		$("#todos").val(parseInt($("#todos").val()) + 1);
+		console.log('Voy a Generar',$(this).prop("id"));
 		switch($(this).prop("id")){
 			case 'controladores':
 				generaController($(this).val());
@@ -241,12 +262,14 @@ function generarArchivos(){
 }
 
 function resetForm(){
+	console.log('resetForm');
 	$("#divBtnZip").addClass('oculto');
 	$("#tcontenidoTablas").html('');
 	$("#divMensajes").html('');
 }
 
 function revisa(){
+	console.log('revisa');
 	if(parseInt($("#todos").val()) == parseInt($("#cuantos").val())){
 		$("#divBtnZip").removeClass('oculto');
 		$("#divMensajes").html(`<button class="btn btn-outline-primary" type="button" id="btnDescargar">Genera Link de Descarga</button>`);
@@ -257,6 +280,7 @@ function revisa(){
 }
 
 function SeleccionaTodos(tipo){
+	console.log('SeleccionaTodos');
 	checkboxes = $("." + tipo);
 	estado = 0;
 	for(i = 0, n = checkboxes.length; i < n; i++){
