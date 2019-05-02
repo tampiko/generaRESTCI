@@ -165,30 +165,8 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
 		
-		// GET
+		// GET ALL
 		fwrite($txt, "\n\t" . "public function index_GET(){");
-		fwrite($txt, "\n\t\t" . "\$res = array(");
-		fwrite($txt, "\n\t\t\t" . "'Creado'     => 'CI - GeneraCode',");
-		fwrite($txt, "\n\t\t\t" . "'Tipo'       => 'GET',");
-		fwrite($txt, "\n\t\t\t" . "'Controller' => '$tabla'");
-		fwrite($txt, "\n\t\t" . ");");
-		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
-		fwrite($txt, "\n\t" . "}");
-		fwrite($txt, "\n");
-		
-		// POST
-		fwrite($txt, "\n\t" . "public function index_POST(){");
-		fwrite($txt, "\n\t\t" . "\$res = array(");
-		fwrite($txt, "\n\t\t\t" . "'Creado'     => 'CI - GeneraCode',");
-		fwrite($txt, "\n\t\t\t" . "'Tipo'       => 'POST',");
-		fwrite($txt, "\n\t\t\t" . "'Controller' => '$tabla'");
-		fwrite($txt, "\n\t\t" . ");");
-		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
-		fwrite($txt, "\n\t" . "}");
-		fwrite($txt, "\n");
-		
-		// GET-ALL
-		fwrite($txt, "\n\t" . "function getAll$tablaCapital" . "_GET(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> get();");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
 		fwrite($txt, "\n\t\t" . "\$$tabla = \$this -> $model -> getAll$tablaCapital();");
@@ -201,8 +179,21 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
 		
-		// GET
-		fwrite($txt, "\n\t" . "function get$tablaCapital" . "_GET(){");
+		// POST
+		fwrite($txt, "\n\t" . "public function index_POST(){");
+		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
+		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
+		fwrite($txt, "\n\t\t" . "\$this -> $model -> add$tablaCapital(\$info);");
+		fwrite($txt, "\n\t\t" . "\$res = array(");
+		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
+		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla added.'");
+		fwrite($txt, "\n\t\t" . ");");
+		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
+		fwrite($txt, "\n\t" . "}");
+		fwrite($txt, "\n");
+		
+		// GET ID
+		fwrite($txt, "\n\t" . "function id_GET(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> get();");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
 		fwrite($txt, "\n\t\t" . "\$where = array('$pk' => info['$pk']);");
@@ -216,21 +207,8 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t" . "\n\t" . "}");
 		fwrite($txt, "\n");
 		
-		// POST
-		fwrite($txt, "\n\tfunction add$tablaCapital" . "_POST(){");
-		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
-		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
-		fwrite($txt, "\n\t\t" . "\$this -> $model -> add$tablaCapital(\$info);");
-		fwrite($txt, "\n\t\t" . "\$res = array(");
-		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
-		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla added.'");
-		fwrite($txt, "\n\t\t" . ");");
-		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
-		fwrite($txt, "\n\t" . "}");
-		fwrite($txt, "\n");
-		
 		// PUT
-		fwrite($txt, "\n\t" . "function upd$tablaCapital" . "_POST(){");
+		fwrite($txt, "\n\t" . "function index_PUT(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
 		fwrite($txt, "\n\t\t" . "\$$pk = \$info['$pk'];");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
@@ -245,7 +223,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n");
 		
 		// DELETE
-		fwrite($txt, "\n\t" . "function del$tablaCapital" . "_POST(){");
+		fwrite($txt, "\n\t" . "function index_DELETE(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
 		fwrite($txt, "\n\t\t" . "\$$pk = \$info['$pk'];");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
@@ -269,6 +247,7 @@ class Archivos extends REST_Controller{
 			'Tabla'      => $tabla,
 			'Info'       => $json_data
 		);
+		
 		$this -> response($res, 200);
 	}
 	
@@ -370,6 +349,7 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n");
 		fwrite($txt, "\n" . "}");
 		fclose($txt);
+		
 		$res = array(
 			'Sistema'    => 'CI - GeneraCode',
 			'Controller' => 'Archivos',
@@ -377,7 +357,6 @@ class Archivos extends REST_Controller{
 			'Tabla'      => $tablaMay,
 			'Info'       => $json_data
 		);
-		
 		$this -> response($res, 200);
 	}
 	
@@ -531,9 +510,3 @@ class Archivos extends REST_Controller{
 		$this -> response($res, 200);
 	}
 }
-
-//GET     -> getDatos
-//POST    -> addDatos
-//GET All -> getAllDatos
-//PUT     -> updDatos
-//DEL     -> deleteDatos
