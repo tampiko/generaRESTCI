@@ -3,7 +3,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Tabla_model extends CI_Model{
 	
-	public $table_name;
+	public $TABLE_NAME;
 	
 	public function __construct(){
 		parent ::__construct();

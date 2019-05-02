@@ -131,21 +131,21 @@ class Archivos extends REST_Controller{
 		$campos        = '';
 		$pk            = '';
 		$enteros       = array();
-		$modelo        = $tabla . "_model";
+		$modelo        = $tablaCapital . "_model";
 		$model         = "M" . $tabla;
 		$txt           = fopen($dirController . $archivo, 'c', 1);
 		
 		foreach($json_data as $x => $x_value){
-			if($x_value['data_type'] == 'int'){
-				array_push($enteros, $x_value['column_name']);
+			if($x_value['DATA_TYPE'] == 'int'){
+				array_push($enteros, $x_value['COLUMN_NAME']);
 			}
-			if($x_value['column_key'] == 'PRI'){
-				$pk = $x_value['column_name'];
+			if($x_value['COLUMN_KEY'] == 'PRI'){
+				$pk = $x_value['COLUMN_NAME'];
 			}
 			if(strlen($campos) != 0){
-				$campos .= ", " . $x_value['column_name'];
+				$campos .= ", " . $x_value['COLUMN_NAME'];
 			}else{
-				$campos .= $x_value['column_name'];
+				$campos .= $x_value['COLUMN_NAME'];
 			}
 		}
 		$cuantosIntegers = count($enteros);
@@ -164,6 +164,8 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "\$this -> load -> model('$modelo', '$model');");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
+		
+		// GET
 		fwrite($txt, "\n\t" . "public function index_GET(){");
 		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'Creado'     => 'CI - GeneraCode',");
@@ -173,6 +175,8 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
+		
+		// POST
 		fwrite($txt, "\n\t" . "public function index_POST(){");
 		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'Creado'     => 'CI - GeneraCode',");
@@ -182,10 +186,12 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\t" . "function getAll$tabla" . "_GET(){");
+		
+		// GET-ALL
+		fwrite($txt, "\n\t" . "function getAll$tablaCapital" . "_GET(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> get();");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
-		fwrite($txt, "\n\t\t" . "\$$tabla = \$this -> $model -> getAll$tabla();");
+		fwrite($txt, "\n\t\t" . "\$$tabla = \$this -> $model -> getAll$tablaCapital();");
 		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
 		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla loaded',");
@@ -194,11 +200,13 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\t" . "function get$tabla" . "_GET(){");
+		
+		// GET
+		fwrite($txt, "\n\t" . "function get$tablaCapital" . "_GET(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> get();");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
 		fwrite($txt, "\n\t\t" . "\$where = array('$pk' => info['$pk']);");
-		fwrite($txt, "\n\t\t" . "\$$tabla = \$this -> $model -> get$tabla(\$where);");
+		fwrite($txt, "\n\t\t" . "\$$tabla = \$this -> $model -> get$tablaCapital(\$where);");
 		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
 		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla loaded',");
@@ -207,10 +215,12 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\tfunction add$tabla" . "_POST(){");
+		
+		// POST
+		fwrite($txt, "\n\tfunction add$tablaCapital" . "_POST(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
-		fwrite($txt, "\n\t\t" . "\$this -> $model -> add$tabla(\$info);");
+		fwrite($txt, "\n\t\t" . "\$this -> $model -> add$tablaCapital(\$info);");
 		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
 		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla added.'");
@@ -218,12 +228,14 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\t" . "function upd$tabla" . "_POST(){");
+		
+		// PUT
+		fwrite($txt, "\n\t" . "function upd$tablaCapital" . "_POST(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
 		fwrite($txt, "\n\t\t" . "\$$pk = \$info['$pk'];");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
 		fwrite($txt, "\n\t\t" . "unset(\$info['$pk']);");
-		fwrite($txt, "\n\t\t" . "\$this -> $model -> upd$tabla(\$$pk, \$info);");
+		fwrite($txt, "\n\t\t" . "\$this -> $model -> upd$tablaCapital(\$$pk, \$info);");
 		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'error'   => FALSE,");
 		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla updated.'");
@@ -231,12 +243,14 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "\$this -> response(\$res, 200);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\t" . "function del$tabla" . "_POST(){");
+		
+		// DELETE
+		fwrite($txt, "\n\t" . "function del$tablaCapital" . "_POST(){");
 		fwrite($txt, "\n\t\t" . "\$info = \$this -> post();");
 		fwrite($txt, "\n\t\t" . "\$$pk = \$info['$pk'];");
 		fwrite($txt, "\n\t\t" . "unset(\$info['apiKey']);");
 		fwrite($txt, "\n\t\t" . "unset(\$info['$pk']);");
-		fwrite($txt, "\n\t\t" . "\$this -> $model -> del$tabla(\$$pk, \$info);");
+		fwrite($txt, "\n\t\t" . "\$this -> $model -> del$tablaCapital(\$$pk, \$info);");
 		fwrite($txt, "\n\t\t" . "\$res = array(");
 		fwrite($txt, "\n\t\t\t" . "'error' => FALSE,");
 		fwrite($txt, "\n\t\t\t" . "'mensaje' => '$tabla deleted.'");
@@ -261,34 +275,35 @@ class Archivos extends REST_Controller{
 	public function generaModel_POST(){
 		$dirModel  = './gens/application/models/';
 		$tabla     = $this -> post('tabla');
+		$tablaMay  = ucfirst($this -> post('tabla'));
 		$json_data = json_decode($this -> post('info'), TRUE);
-		$archivo   = $tabla . "_model.php";
+		$archivo   = $tablaMay . "_model.php";
 		$campos    = '';
 		$pk        = '';
 		$enteros   = array();
 		$txt       = fopen($dirModel . $archivo, 'w');
 		
 		foreach($json_data as $x => $x_value){
-			if($x_value['data_type'] == 'int'){
-				array_push($enteros, $x_value['column_name']);
+			if($x_value['DATA_TYPE'] == 'int'){
+				array_push($enteros, $x_value['COLUMN_NAME']);
 			}
-			if($x_value['column_key'] == 'PRI'){
-				$pk = $x_value['column_name'];
+			if($x_value['COLUMN_KEY'] == 'PRI'){
+				$pk = $x_value['COLUMN_NAME'];
 			}
 			if(strlen($campos) != 0){
-				$campos .= ", " . $x_value['column_name'];
+				$campos .= ", " . $x_value['COLUMN_NAME'];
 			}else{
-				$campos .= $x_value['column_name'];
+				$campos .= $x_value['COLUMN_NAME'];
 			}
 		}
 		$cuantosIntegers = count($enteros);
 		fwrite($txt, " <?php");
 		fwrite($txt, "\n" . "defined('BASEPATH') or exit('No direct script access allowed');");
-		fwrite($txt, "\n" . "class $tabla" . "_model extends CI_Model{");
+		fwrite($txt, "\n" . "class $tablaMay" . "_model extends CI_Model{");
 		fwrite($txt, "\n");
 		fwrite($txt, "\n");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\t" . 'public $' . $x_value['column_name'] . ";");
+			fwrite($txt, "\t" . 'public $' . $x_value['COLUMN_NAME'] . ";");
 			fwrite($txt, "\n");
 		}
 		fwrite($txt, "\n\t" . "public function __construct(){");
@@ -296,7 +311,9 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "\$this -> load -> database();");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\t" . "function getAll$tabla(){");
+		
+		// getAll
+		fwrite($txt, "\n\t" . "function getAll$tablaMay(){");
 		fwrite($txt, "\n\t\t" . "\$this -> db -> select('$campos');");
 		fwrite($txt, "\n\t\t" . "\$this -> db -> order_by('$pk', 'asc');");
 		fwrite($txt, "\n\t\t" . "\$query = \$this -> db -> get('" . strtolower($tabla) . "');");
@@ -311,7 +328,9 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "return \$rows;");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\t" . "function get$tabla(" . '$where' . "){");
+		
+		// get
+		fwrite($txt, "\n\t" . "function get$tablaMay(" . '$where' . "){");
 		fwrite($txt, "\n\t\t" . "\$this -> db -> select('$campos');");
 		fwrite($txt, "\n\t\t" . "\$this -> db -> where(\$where);");
 		fwrite($txt, "\n\t\t" . "\$this -> db -> order_by('$pk', 'asc');");
@@ -327,17 +346,24 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "return \$rows;");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\t" . "function add$tabla(" . '$datos' . "){");
+		
+		// add
+		fwrite($txt, "\n\t" . "function add$tablaMay(" . '$datos' . "){");
 		fwrite($txt, "\n\t\t" . "\$this -> db -> insert('" . strtolower($tabla) . "', \$datos);");
-		fwrite($txt, "\n\t\t" . "return \$this -> db -> insert_id();");
+		fwrite($txt, "\n\t\t" . "return get$tablaMay(\$this -> db -> insert_id());");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\t" . "function upd$tabla(\$$pk,\$datos){");
+		
+		// upd
+		fwrite($txt, "\n\t" . "function upd$tablaMay(\$$pk,\$datos){");
 		fwrite($txt, "\n\t\t" . "\$this -> db -> where('$pk', \$$pk);");
-		fwrite($txt, "\n\t\t" . "return \$this -> db -> update('" . strtolower($tabla) . "', \$datos);");
+		fwrite($txt, "\n\t\t" . "\$this -> db -> update('" . strtolower($tabla) . "', \$datos);");
+		fwrite($txt, "\n\t\t" . "return get$tablaMay(\$$pk);");
 		fwrite($txt, "\n\t" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n\t" . "function del$tabla(\$$pk,\$datos){");
+		
+		// del
+		fwrite($txt, "\n\t" . "function del$tablaMay(\$$pk,\$datos){");
 		fwrite($txt, "\n\t\t" . "\$this -> db -> where('$pk', \$$pk);");
 		fwrite($txt, "\n\t\t" . "return \$this -> db -> update('" . strtolower($tabla) . "', \$datos);");
 		fwrite($txt, "\n\t" . "}");
@@ -348,7 +374,7 @@ class Archivos extends REST_Controller{
 			'Sistema'    => 'CI - GeneraCode',
 			'Controller' => 'Archivos',
 			'Funcion'    => 'generaModel',
-			'Tabla'      => $tabla,
+			'Tabla'      => $tablaMay,
 			'Info'       => $json_data
 		);
 		
@@ -358,6 +384,7 @@ class Archivos extends REST_Controller{
 	public function generaJs_POST(){
 		$dirJs     = './gens/app/js/';
 		$tabla     = $this -> post('tabla');
+		$tablaMay  = ucfirst($this -> post('tabla'));
 		$json_data = json_decode($this -> post('info'), TRUE);
 		$archivo   = $tabla . ".js";
 		$campos    = '';
@@ -366,39 +393,35 @@ class Archivos extends REST_Controller{
 		$txt       = fopen($dirJs . $archivo, 'w');
 		
 		foreach($json_data as $x => $x_value){
-			if($x_value['data_type'] == 'int'){
-				array_push($enteros, $x_value['column_name']);
+			if($x_value['DATA_TYPE'] == 'int'){
+				array_push($enteros, $x_value['COLUMN_NAME']);
 			}
-			if($x_value['column_key'] == 'PRI'){
-				$pk = $x_value['column_name'];
+			if($x_value['COLUMN_KEY'] == 'PRI'){
+				$pk = $x_value['COLUMN_NAME'];
 			}
 			if(strlen($campos) != 0){
-				$campos .= ", " . $x_value['column_name'];
+				$campos .= ", " . $x_value['COLUMN_NAME'];
 			}else{
-				$campos .= $x_value['column_name'];
+				$campos .= $x_value['COLUMN_NAME'];
 			}
 		}
 		$cuantosIntegers = count($enteros);
 		fwrite($txt, "var elIndex = 'index.php/';");
 		fwrite($txt, "\n" . "var urlServer = '/generacodesrv/';");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n" . "function getAll${tabla}(){");
-		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
-		}
+		
+		// getAll
+		fwrite($txt, "\n" . "function getAll${tablaMay}(){");
 		fwrite($txt, "\n\t" . "$.ajax({");
 		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '$tabla/getAll$tabla',");
 		fwrite($txt, "\n\t\t" . "type: 'GET',");
 		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
 		fwrite($txt, "\n\t\t" . "data: {");
-		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
-		}
 		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
 		fwrite($txt, "\n\t\t" . "}");
 		fwrite($txt, "\n\t" . "})");
 		fwrite($txt, "\n\t" . ".done(function(res){");
-		fwrite($txt, "\n\t\t" . "console.log('success');");
+		fwrite($txt, "\n\t\t" . "console.log('success', res);");
 		fwrite($txt, "\n\t" . "})");
 		fwrite($txt, "\n\t" . ".fail(function(){");
 		fwrite($txt, "\n\t\t" . "console.log('error');");
@@ -408,9 +431,13 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t" . "});");
 		fwrite($txt, "\n" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n" . "function add${tabla}(){");
+		
+		// add
+		fwrite($txt, "\n" . "function add${tablaMay}(){");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+			if($x_value['COLUMN_KEY'] != 'PRI'){
+				fwrite($txt, "\n\t" . $x_value['COLUMN_NAME'] . " = \$('" . $x_value['COLUMN_NAME'] . "').val();");
+			}
 		}
 		fwrite($txt, "\n\t" . "$.ajax({");
 		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '${tabla}/add${tabla}',");
@@ -418,13 +445,15 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
 		fwrite($txt, "\n\t\t" . "data: {");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+			if($x_value['COLUMN_KEY'] != 'PRI'){
+				fwrite($txt, "\n\t\t\t" . $x_value['COLUMN_NAME'] . ' : ' . $x_value['COLUMN_NAME'] . ",");
+			}
 		}
 		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
 		fwrite($txt, "\n\t\t" . "}");
 		fwrite($txt, "\n\t" . "})");
 		fwrite($txt, "\n\t" . ".done(function(res){");
-		fwrite($txt, "\n\t\t" . "console.log('success');");
+		fwrite($txt, "\n\t\t" . "console.log('success', res);");
 		fwrite($txt, "\n\t" . "})");
 		fwrite($txt, "\n\t" . ".fail(function(){");
 		fwrite($txt, "\n\t\t" . "console.log('error');");
@@ -434,9 +463,11 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t" . "});");
 		fwrite($txt, "\n" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n" . "function upd${tabla}(){");
+		
+		// upd
+		fwrite($txt, "\n" . "function upd${tablaMay}(){");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+			fwrite($txt, "\n\t" . $x_value['COLUMN_NAME'] . " = \$('" . $x_value['COLUMN_NAME'] . "').val();");
 		}
 		fwrite($txt, "\n\t" . "$.ajax({");
 		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '${tabla}/upd${tabla}',");
@@ -444,13 +475,13 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
 		fwrite($txt, "\n\t\t" . "data: {");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+			fwrite($txt, "\n\t\t\t" . $x_value['COLUMN_NAME'] . ' : ' . $x_value['COLUMN_NAME'] . ",");
 		}
 		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
 		fwrite($txt, "\n\t\t" . "}");
 		fwrite($txt, "\n\t" . "})");
 		fwrite($txt, "\n\t" . ".done(function(res){");
-		fwrite($txt, "\n\t\t" . "console.log('success');");
+		fwrite($txt, "\n\t\t" . "console.log('success', res);");
 		fwrite($txt, "\n\t" . "})");
 		fwrite($txt, "\n\t" . ".fail(function(){");
 		fwrite($txt, "\n\t\t" . "console.log('error');");
@@ -460,9 +491,13 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t" . "});");
 		fwrite($txt, "\n" . "}");
 		fwrite($txt, "\n");
-		fwrite($txt, "\n" . "function del${tabla}(){");
+		
+		// del
+		fwrite($txt, "\n" . "function del${tablaMay}(){");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t" . $x_value['column_name'] . " = \$('" . $x_value['column_name'] . "').val();");
+			if($x_value['COLUMN_KEY'] == 'PRI'){
+				fwrite($txt, "\n\t" . $x_value['COLUMN_NAME'] . " = \$('" . $x_value['COLUMN_NAME'] . "').val();");
+			}
 		}
 		fwrite($txt, "\n\t" . "$.ajax({");
 		fwrite($txt, "\n\t\t" . "url: urlServer + elIndex + '${tabla}/del${tabla}',");
@@ -470,13 +505,15 @@ class Archivos extends REST_Controller{
 		fwrite($txt, "\n\t\t" . "dataType: 'JSON',");
 		fwrite($txt, "\n\t\t" . "data: {");
 		foreach($json_data as $x => $x_value){
-			fwrite($txt, "\n\t\t\t" . $x_value['column_name'] . ' : ' . $x_value['column_name'] . ",");
+			if($x_value['COLUMN_KEY'] == 'PRI'){
+				fwrite($txt, "\n\t\t\t" . $x_value['COLUMN_NAME'] . ' : ' . $x_value['COLUMN_NAME'] . ",");
+			}
 		}
 		fwrite($txt, "\n\t\t\t" . "apiKey: sessionStorage.getItem('key')");
 		fwrite($txt, "\n\t\t" . "}");
 		fwrite($txt, "\n\t" . "})");
 		fwrite($txt, "\n\t" . ".done(function(res){");
-		fwrite($txt, "\n\t\t" . "console.log('success');");
+		fwrite($txt, "\n\t\t" . "console.log('success', res);");
 		fwrite($txt, "\n\t" . "})");
 		fwrite($txt, "\n\t" . ".fail(function(){");
 		fwrite($txt, "\n\t\t" . "console.log('error');");
@@ -494,3 +531,9 @@ class Archivos extends REST_Controller{
 		$this -> response($res, 200);
 	}
 }
+
+//GET     -> getDatos
+//POST    -> addDatos
+//GET All -> getAllDatos
+//PUT     -> updDatos
+//DEL     -> deleteDatos

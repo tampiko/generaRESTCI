@@ -1,4 +1,5 @@
 $(document).ready(function(){
+	sessionStorage.clear();
 	getBaseDatosAll();
 });
 
@@ -42,7 +43,7 @@ $("#btnSelTodosJs").click(function(){
 });
 
 $(function(){
-	$('[data-toggle="tooltip"]').tooltip()
+	$('[data-toggle="tooltip"]').tooltip();
 });
 
 function descargar(){
@@ -85,6 +86,7 @@ function getBaseDatosAll(){
 }
 
 function getTablasDeBD(){
+	sessionStorage.clear();
 	console.log('getTablasDeBD');
 	bdatos = $("#bdatos").val();
 	$.ajax({
@@ -99,34 +101,34 @@ function getTablasDeBD(){
 		$("#tabla").html('');
 		$("#tcontenidoTablas").html('');
 		$.each(res.data, function(index, el){
-			getInfoTabla(el.table_name.toLowerCase());
-			$("#tabla").append(`<option value="${el.table_name.toLowerCase()}">${el.table_name.toLowerCase()}</option>`);
+			getInfoTabla(el.TABLE_NAME.toLowerCase());
+			$("#tabla").append(`<option value="${el.TABLE_NAME.toLowerCase()}">${el.TABLE_NAME.toLowerCase()}</option>`);
 			$("#tcontenidoTablas").append(`
 			<tr>
-				<td width="70%" class="text-monospace">${el.table_name.toLowerCase()}</td>
-				<td width="10%" class="text-monospace text-center" id="cC${el.table_name.toLowerCase()}">
+				<td width="70%" class="text-monospace">${el.TABLE_NAME.toLowerCase()}</td>
+				<td width="10%" class="text-monospace text-center" id="cC${el.TABLE_NAME.toLowerCase()}">
 					<input	type="checkbox"
-							class="${el.table_name.toLowerCase()} controladores" 
+							class="${el.TABLE_NAME.toLowerCase()} controladores" 
 							id="controladores" 
-							value="${el.table_name.toLowerCase()}" 
+							value="${el.TABLE_NAME.toLowerCase()}" 
 							checked="checked">
 				</td>
-				<td width="10%" class="text-monospace text-center" id="cM${el.table_name.toLowerCase()}">
+				<td width="10%" class="text-monospace text-center" id="cM${el.TABLE_NAME.toLowerCase()}">
 					<input	type="checkbox"
-							class="${el.table_name.toLowerCase()} modelos" 
+							class="${el.TABLE_NAME.toLowerCase()} modelos" 
 							id="modelos" 
-							value="${el.table_name.toLowerCase()}" 
+							value="${el.TABLE_NAME.toLowerCase()}" 
 							checked="checked">
 				</td>
-				<td width="10%" class="text-monospace text-center" id="cJ${el.table_name.toLowerCase()}">
+				<td width="10%" class="text-monospace text-center" id="cJ${el.TABLE_NAME.toLowerCase()}">
 					<input	type="checkbox"
-							class="${el.table_name.toLowerCase()} js" 
+							class="${el.TABLE_NAME.toLowerCase()} js" 
 							id="js" 
-							value="${el.table_name.toLowerCase()}" 
+							value="${el.TABLE_NAME.toLowerCase()}" 
 							checked="checked">
 				</td>
 				<td>
-					<button type="button" class="btn btn-info fa fa-hand-o-left" onclick="SeleccionaTodos('${el.table_name.toLowerCase()}');"></button>
+					<button type="button" class="btn btn-info fa fa-hand-o-left" onclick="SeleccionaTodos('${el.TABLE_NAME.toLowerCase()}');"></button>
 				</td>
 			</tr>`);
 		});
@@ -153,7 +155,6 @@ function getInfoTabla(tabla){
 			tabla: tabla
 		}
 	}).done(function(res){
-		//console.log(res);
 		sessionStorage.setItem(tabla, JSON.stringify(res.data));
 	}).fail(function(){
 	}).always(function(){

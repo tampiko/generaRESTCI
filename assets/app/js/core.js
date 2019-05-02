@@ -20,3 +20,7 @@ function cargaScript(url, callback){
 	script.src = urlServer + url + "?fecha=" + d.getTime() * 15873;
 	document.getElementsByTagName('head')[0].appendChild(script);
 }
+
+function primeraMayuscula(string){
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}

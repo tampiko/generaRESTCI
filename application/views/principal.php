@@ -1,11 +1,5 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed');
-/**
- * Created by PhpStorm.
- * User: Juan Manuel
- * Date: 04/10/2018
- * Time: 04:12 PM
- */
+	defined('BASEPATH') or exit('No direct script access allowed');
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -21,20 +15,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 <body>
 
-<nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark">
-	<a class="navbar-brand" href="#">Genera REST - CI</a>
-	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-	        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-		<span class="navbar-toggler-icon"></span>
-	</button>
-	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-		<ul class="navbar-nav mr-auto">
-			<li class="nav-item active">
-				<a class="nav-link" href="#">Generar</a>
-			</li>
-		</ul>
-	</div>
-</nav>
+	<nav class="navbar sticky-top navbar-expand-md navbar-dark bg-dark">
+		<a class="navbar-brand" href="#">Genera REST - CI</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+						aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item active">
+					<a class="nav-link" href="#">Generar</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
 
 
 <div class="container mt-3">
