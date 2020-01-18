@@ -101,34 +101,34 @@ function getTablasDeBD(){
 		$("#tabla").html('');
 		$("#tcontenidoTablas").html('');
 		$.each(res.data, function(index, el){
-			getInfoTabla(el.TABLE_NAME.toLowerCase());
-			$("#tabla").append(`<option value="${el.TABLE_NAME.toLowerCase()}">${el.TABLE_NAME.toLowerCase()}</option>`);
+			getInfoTabla(el.table_name.toLowerCase());
+			$("#tabla").append(`<option value="${el.table_name.toLowerCase()}">${el.table_name.toLowerCase()}</option>`);
 			$("#tcontenidoTablas").append(`
 			<tr>
-				<td width="70%" class="text-monospace">${el.TABLE_NAME.toLowerCase()}</td>
-				<td width="10%" class="text-monospace text-center" id="cC${el.TABLE_NAME.toLowerCase()}">
+				<td width="70%" class="text-monospace">${el.table_name.toLowerCase()}</td>
+				<td width="10%" class="text-monospace text-center" id="cC${el.table_name.toLowerCase()}">
 					<input	type="checkbox"
-							class="${el.TABLE_NAME.toLowerCase()} controladores" 
+							class="${el.table_name.toLowerCase()} controladores" 
 							id="controladores" 
-							value="${el.TABLE_NAME.toLowerCase()}" 
+							value="${el.table_name.toLowerCase()}" 
 							checked="checked">
 				</td>
-				<td width="10%" class="text-monospace text-center" id="cM${el.TABLE_NAME.toLowerCase()}">
+				<td width="10%" class="text-monospace text-center" id="cM${el.table_name.toLowerCase()}">
 					<input	type="checkbox"
-							class="${el.TABLE_NAME.toLowerCase()} modelos" 
+							class="${el.table_name.toLowerCase()} modelos" 
 							id="modelos" 
-							value="${el.TABLE_NAME.toLowerCase()}" 
+							value="${el.table_name.toLowerCase()}" 
 							checked="checked">
 				</td>
-				<td width="10%" class="text-monospace text-center" id="cJ${el.TABLE_NAME.toLowerCase()}">
+				<td width="10%" class="text-monospace text-center" id="cJ${el.table_name.toLowerCase()}">
 					<input	type="checkbox"
-							class="${el.TABLE_NAME.toLowerCase()} js" 
+							class="${el.table_name.toLowerCase()} js" 
 							id="js" 
-							value="${el.TABLE_NAME.toLowerCase()}" 
+							value="${el.table_name.toLowerCase()}" 
 							checked="checked">
 				</td>
 				<td>
-					<button type="button" class="btn btn-info fa fa-hand-o-left" onclick="SeleccionaTodos('${el.TABLE_NAME.toLowerCase()}');"></button>
+					<button type="button" class="btn btn-info fa fa-hand-o-left" onclick="SeleccionaTodos('${el.table_name.toLowerCase()}');"></button>
 				</td>
 			</tr>`);
 		});
