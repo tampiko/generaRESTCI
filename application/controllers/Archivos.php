@@ -22,7 +22,7 @@ class Archivos extends REST_Controller{
 	
 	public function generaZip_GET(){
 		/* Nombre del Archivo Generado */
-		$archivoZip = $_GET['nombre'];
+		$archivoZip = $_GET['nombre'].'.zip';
 		
 		/* Para guardar y eliminar los archivos que se agregan */
 		$archivos = array();
