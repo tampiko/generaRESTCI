@@ -1,19 +1,19 @@
 var elIndex = 'index.php/';
 var urlServer = '/generarestci/';
 
-function cargaScript(url, callback){
+function cargaScript(url, callback) {
 	var d = new Date();
 	var script = document.createElement('script');
-	if(script.readyState){/* IE */
-		script.onreadystatechange = function(){
-			if(script.readyState === 'loaded' || script.readyState === 'complete'){
+	if (script.readyState) {/* IE */
+		script.onreadystatechange = function () {
+			if (script.readyState === 'loaded' || script.readyState === 'complete') {
 				script.onreadystatechange = null;
 				callback();
 			}
 			var d = new Date();
 		};
-	}else{/* Others */
-		script.onload = function(){
+	} else {/* Others */
+		script.onload = function () {
 			callback();
 		};
 	}
@@ -21,6 +21,6 @@ function cargaScript(url, callback){
 	document.getElementsByTagName('head')[0].appendChild(script);
 }
 
-function primeraMayuscula(string){
+function primeraMayuscula(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 }
